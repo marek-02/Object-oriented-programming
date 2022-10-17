@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class World {
     public static void main(String[] args) {
+        //run(stringToDirections(args));
         Vector2d position1 = new Vector2d(1,2);
         System.out.println(position1);
         Vector2d position2 = new Vector2d(-2,1);
@@ -20,7 +21,7 @@ public class World {
     }
 
     public static void run(Direction[] dirs){
-                System.out.println("Start");
+        System.out.println("Start");
         for(Direction direction : dirs)
         {
             switch (direction) {
@@ -28,7 +29,7 @@ public class World {
                 case BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
                 case RIGHT -> System.out.println("Zwierzak skręca w prawo");
                 case LEFT -> System.out.println("Zwierzak skręca w lewo");
-                default -> System.out.println("Niepoprawne polecenie");
+                default -> throw new IllegalStateException("Zła tablica argumentów");
             }
 
         }
@@ -46,20 +47,18 @@ public class World {
                     break;
                 }
 
-
         Direction[] result = new Direction[realLength];
-        for(int i = 0; i < realLength; i++) {
-            switch (dirs[i]) {
-                case "f" -> result[i] = Direction.FORWARD;
-                case "b" -> result[i] = Direction.BACKWARD;
-                case "r" -> result[i] = Direction.RIGHT;
-                case "l" -> result[i] = Direction.LEFT;
-                default -> throw new IllegalStateException("Niepoprawne polecenie");
-                //zawsze, gdy w argsach są znaki inne niż f, b, r, l
-                // Execution failed for task ':World.main()'.
-                //> Process 'command 'C:/Users/marek/.jdks/openjdk-19/bin/java.exe'' finished with non-zero exit value 1
+        int i = 0;
+        for(String dir : dirs) {
+            switch (dir) {
+                case "f" -> result[i++] = Direction.FORWARD;
+                case "b" -> result[i++] = Direction.BACKWARD;
+                case "r" -> result[i++] = Direction.RIGHT;
+                case "l" -> result[i++] = Direction.LEFT;
+                default -> System.out.println("Niepoprawne polecenie");
             }
         }
+        //return new Direction[] {Direction.FORWARD, Direction.BACKWARD};
         return result;
     }
 }
