@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class World {
     public static void main(String[] args) {
+        //run(stringToDirections(args));
         Vector2d position1 = new Vector2d(1,2);
         System.out.println(position1);
         Vector2d position2 = new Vector2d(-2,1);
@@ -28,7 +29,6 @@ public class World {
                 case BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
                 case RIGHT -> System.out.println("Zwierzak skręca w prawo");
                 case LEFT -> System.out.println("Zwierzak skręca w lewo");
-
                 default -> throw new IllegalStateException("Zła tablica argumentów");
             }
 
@@ -59,7 +59,6 @@ public class World {
                 default -> System.out.println("Niepoprawne polecenie");
             }
         }
-
         return result;
     }
 }
