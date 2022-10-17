@@ -4,9 +4,19 @@ import java.util.Arrays;
 
 public class World {
     public static void main(String[] args) {
-        System.out.println("system wystartował");
-        run(stringToDirections(args));
-        System.out.println("system zakończył działanie");
+        Vector2d position1 = new Vector2d(1,2);
+        System.out.println(position1);
+        Vector2d position2 = new Vector2d(-2,1);
+        System.out.println(position2);
+        System.out.println(position1.add(position2));
+
+        MapDirection map = MapDirection.NORTH;
+        System.out.println(map.toString());
+        map = map.next();
+        System.out.println(map.toString());
+        map = map.previous();
+        System.out.println(map.toString());
+        System.out.println(map.toUnitVector().toString());
     }
 
     public static void run(Direction[] dirs){
@@ -18,7 +28,7 @@ public class World {
                 case BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
                 case RIGHT -> System.out.println("Zwierzak skręca w prawo");
                 case LEFT -> System.out.println("Zwierzak skręca w lewo");
-                default -> System.out.println("Zwierzak idzie do przodu");
+                default -> System.out.println("Niepoprawne polecenie");
             }
 
         }
@@ -44,7 +54,10 @@ public class World {
                 case "b" -> result[i] = Direction.BACKWARD;
                 case "r" -> result[i] = Direction.RIGHT;
                 case "l" -> result[i] = Direction.LEFT;
-                default -> result[i] = null;
+                default -> throw new IllegalStateException("Niepoprawne polecenie");
+                //zawsze, gdy w argsach są znaki inne niż f, b, r, l
+                // Execution failed for task ':World.main()'.
+                //> Process 'command 'C:/Users/marek/.jdks/openjdk-19/bin/java.exe'' finished with non-zero exit value 1
             }
         }
         return result;
