@@ -28,11 +28,8 @@ public class World {
                 case BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
                 case RIGHT -> System.out.println("Zwierzak skręca w prawo");
                 case LEFT -> System.out.println("Zwierzak skręca w lewo");
-<<<<<<< HEAD
+
                 default -> throw new IllegalStateException("Zła tablica argumentów");
-=======
-                default -> System.out.println("Niepoprawne polecenie");
->>>>>>> lab2
             }
 
         }
@@ -51,7 +48,7 @@ public class World {
                 }
 
         Direction[] result = new Direction[realLength];
-<<<<<<< HEAD
+
         int i = 0;
         for(String dir : dirs) {
             switch (dir) {
@@ -60,18 +57,6 @@ public class World {
                 case "r" -> result[i++] = Direction.RIGHT;
                 case "l" -> result[i++] = Direction.LEFT;
                 default -> System.out.println("Niepoprawne polecenie");
-=======
-        for(int i = 0; i < realLength; i++) {
-            switch (dirs[i]) {
-                case "f" -> result[i] = Direction.FORWARD;
-                case "b" -> result[i] = Direction.BACKWARD;
-                case "r" -> result[i] = Direction.RIGHT;
-                case "l" -> result[i] = Direction.LEFT;
-                default -> throw new IllegalStateException("Niepoprawne polecenie");
-                //zawsze, gdy w argsach są znaki inne niż f, b, r, l
-                // Execution failed for task ':World.main()'.
-                //> Process 'command 'C:/Users/marek/.jdks/openjdk-19/bin/java.exe'' finished with non-zero exit value 1
->>>>>>> lab2
             }
         }
 
