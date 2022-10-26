@@ -1,23 +1,17 @@
 package agh.ics.oop;
 
-import java.util.Arrays;
-
 public class World {
     public static void main(String[] args) {
         //run(stringToDirections(args));
-        Vector2d position1 = new Vector2d(1,2);
-        System.out.println(position1);
-        Vector2d position2 = new Vector2d(-2,1);
-        System.out.println(position2);
-        System.out.println(position1.add(position2));
-
-        MapDirection map = MapDirection.NORTH;
-        System.out.println(map.toString());
-        map = map.next();
-        System.out.println(map.toString());
-        map = map.previous();
-        System.out.println(map.toString());
-        System.out.println(map.toUnitVector().toString());
+        Animal mruczek = new Animal();
+        System.out.println(mruczek);
+        OptionsParser op = new OptionsParser();
+        MoveDirection[] orders = op.parse(args);
+        for(MoveDirection order : orders)
+        {
+            mruczek.move(order);
+        }
+        System.out.println(mruczek);
     }
 
     public static void run(Direction[] dirs){
