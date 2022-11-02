@@ -2,16 +2,12 @@ package agh.ics.oop;
 
 public class World {
     public static void main(String[] args) {
-        //run(stringToDirections(args));
-        Animal mruczek = new Animal();
-        System.out.println(mruczek);
-        OptionsParser op = new OptionsParser();
-        MoveDirection[] orders = op.parse(args);
-        for(MoveDirection order : orders)
-        {
-            mruczek.move(order);
-        }
-        System.out.println(mruczek);
+        MoveDirection[] directions = new OptionsParser().parse(args);
+        IWorldMap map = new RectangularMap(10, 5);
+        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
+        IEngine engine = new SimulationEngine(directions, map, positions);
+        engine.run();
+        System.out.println(map);
     }
 
     public static void run(Direction[] dirs){
@@ -29,7 +25,6 @@ public class World {
         }
         System.out.println("Stop");
     }
-
     public static Direction[] stringToDirections(String[] dirs) {
 
         String[] correct = {"f",  "b", "r", "l"};
@@ -56,35 +51,3 @@ public class World {
         return result;
     }
 }
-
-
-
-//public static void run(String[] args){
-//        System.out.println("zwierzak idzie do przodu");
-//        for(int i = 0; i < args.length - 1; i++)
-//            System.out.printf("%s, ", args[i]);
-//        if (args.length > 0)
-//            System.out.println(args[args.length - 1]);
-
-//        System.out.println("Start");
-//        for(String argument : args)
-//        {
-//            switch (argument) {
-//                case "f":
-//                    System.out.println("Zwierzak idzie do przodu");
-//                    break;
-//                case "b":
-//                    System.out.println("Zwierzak idzie do tyłu");
-//                    break;
-//                case "r":
-//                    System.out.println("Zwierzak skręca w prawo");
-//                    break;
-//                case "l":
-//                    System.out.println("Zwierzak skręca w lewo");
-//                    break;
-//                default:
-//                    System.out.println("Zwierzak idzie do przodu");
-//            };
-//        }
-//        System.out.println("Stop");
-//  }
