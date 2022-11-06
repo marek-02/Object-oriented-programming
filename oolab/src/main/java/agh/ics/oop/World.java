@@ -3,8 +3,8 @@ package agh.ics.oop;
 public class World {
     public static void main(String[] args) {
         MoveDirection[] directions = new OptionsParser().parse(args);
-        IWorldMap map = new RectangularMap(10, 5);
-        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
+        IWorldMap map = new RectangularMap(6, 6);
+        Vector2d[] positions = { new Vector2d(0,1), new Vector2d(4, 4), new Vector2d(4, 4), new Vector2d(2, 3) };
         IEngine engine = new SimulationEngine(directions, map, positions);
         engine.run();
         System.out.println(map);

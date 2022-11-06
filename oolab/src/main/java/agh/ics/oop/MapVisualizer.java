@@ -35,7 +35,7 @@ public class MapVisualizer {
             if (i == upperRight.y + 1) {
                 builder.append(drawHeader(lowerLeft, upperRight));
             }
-            builder.append(String.format("%3d: ", i));
+            builder.append(String.format("%2d: ", i));
             for (int j = lowerLeft.x; j <= upperRight.x + 1; j++) {
                 if (i < lowerLeft.y || i > upperRight.y) {
                     builder.append(drawFrame(j <= upperRight.x));
