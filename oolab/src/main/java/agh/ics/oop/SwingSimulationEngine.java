@@ -39,7 +39,7 @@ public class SwingSimulationEngine implements ActionListener{
 
         for(Vector2d v : vectors){
             Animal a = new Animal(map, v);
-            if(map.canMoveTo(v)) animals.add(a);
+            if (map.canMoveTo(v)) animals.add(a);
             map.place(a);
         }
         area.setText(map.toString());
