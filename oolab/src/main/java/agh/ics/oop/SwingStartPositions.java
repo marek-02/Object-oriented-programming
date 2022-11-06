@@ -23,7 +23,7 @@ public class SwingStartPositions {
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                numberOfAnimals = Integer.parseInt(number.getText());
+                numberOfAnimals = Integer.parseInt(number.getText().trim());
                 positions = new ArrayList<>();
                 for(int i = 0; i < numberOfAnimals; i++){
                     positions.add(new SwingGetOnePosition(i + 1).getVector2d());

@@ -22,8 +22,8 @@ public class SwingGetOnePosition {
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int X = Integer.parseInt(x.getText());
-                int Y = Integer.parseInt(y.getText());
+                int X = Integer.parseInt(x.getText().trim());
+                int Y = Integer.parseInt(y.getText().trim());
                 vector2d = new Vector2d(X, Y);
 
                 d.setVisible(false);

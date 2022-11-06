@@ -41,6 +41,14 @@ public class RectangularMap implements IWorldMap{
         return null;
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
     @Override
     public String toString(){
         return this.visualizer.draw(lowerLeftCorner, upperRightCorner);

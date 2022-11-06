@@ -3,7 +3,7 @@ package agh.ics.oop;
 public class SwingApplication {
     public static void main(String[] args) {
         SwingMapDimensions mapDim = new SwingMapDimensions();
-        IWorldMap map = new RectangularMap(mapDim.getxMap(), mapDim.getyMap());
+        RectangularMap map = new RectangularMap(mapDim.getyMap(), mapDim.getxMap());
 
         SwingStartPositions positions = new SwingStartPositions();
 
