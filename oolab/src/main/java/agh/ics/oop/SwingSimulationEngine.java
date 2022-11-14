@@ -11,7 +11,7 @@ import static java.lang.Math.max;
 
 public class SwingSimulationEngine implements ActionListener{
     private MoveDirection[] moves;
-    private RectangularMap map;
+    private AbstractWorldMap map;
     private List<Animal> animals;
     private JFrame f;
     private JTextArea area;
@@ -19,7 +19,7 @@ public class SwingSimulationEngine implements ActionListener{
     private int i;
     private Timer timer;
 
-    public SwingSimulationEngine(MoveDirection[] moves, RectangularMap map, Vector2d[] vectors){
+    public SwingSimulationEngine(MoveDirection[] moves, AbstractWorldMap map, Vector2d[] vectors){
         this.f = new JFrame("Animation");
         this.area = new JTextArea();
         this.b = new JButton("Start animation");
@@ -28,8 +28,28 @@ public class SwingSimulationEngine implements ActionListener{
         this.animals = new ArrayList<>();
         this.i = 0;
         this.timer = null;
-        int x = max(190, 20 * (map.getWidth() + 5));
-        int y = max(20, 20 * (map.getHeight() + 4));
+
+        for(Vector2d v : vectors){
+            Animal a = new Animal(map, v);
+            if(map.place(a)) animals.add(a);
+        }
+
+        Vector2d ur = map.getUpperRightCorner();
+        Vector2d ll = map.getLowerLeftCorner();
+        int w = ur.getX() - ll.getX();
+        int h = ur.getY() - ll.getY();
+        System.out.println(ur);
+        System.out.println(ll);
+        System.out.println(w);
+        System.out.println(h);
+        int x = max(190, 20 * (w + 5));
+        int y = max(20, 20 * (h + 4));
+
+        if (map instanceof GrassField) {
+            int worstPossibility = moves.length / animals.size();
+            x = max(x, 20 * (w + worstPossibility + 2));
+            y = max(y, 20 * (h + worstPossibility + 2));
+        }
 
 
         b.setBounds(20, 25, 150, 50);
@@ -37,11 +57,6 @@ public class SwingSimulationEngine implements ActionListener{
 
         area.setText(map.toString());
 
-        for(Vector2d v : vectors){
-            Animal a = new Animal(map, v);
-            if (map.canMoveTo(v)) animals.add(a);
-            map.place(a);
-        }
         area.setText(map.toString());
         b.addActionListener(this);
         f.add(area);

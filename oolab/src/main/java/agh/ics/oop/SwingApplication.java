@@ -2,8 +2,20 @@ package agh.ics.oop;
 
 public class SwingApplication {
     public static void main(String[] args) {
-        SwingMapDimensions mapDim = new SwingMapDimensions();
-        RectangularMap map = new RectangularMap(mapDim.getyMap(), mapDim.getxMap());
+        SwingMapChooser chooser = new SwingMapChooser();
+        String decision = chooser.getDecision();
+        System.out.println(decision);
+        AbstractWorldMap map;
+        if (decision.equals("yes") || decision.equals("y")) {
+            SwingGrassCounter gc = new SwingGrassCounter();
+            map = new GrassField(gc.getGrassCounter());
+        }
+        else
+        {
+            SwingMapDimensions mapDim = new SwingMapDimensions();
+            map = new RectangularMap(mapDim.getyMap(), mapDim.getxMap());
+        }
+
 
         SwingStartPositions positions = new SwingStartPositions();
 
