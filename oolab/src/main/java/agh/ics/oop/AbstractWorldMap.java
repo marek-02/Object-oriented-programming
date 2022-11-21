@@ -8,16 +8,28 @@ public abstract class AbstractWorldMap implements IWorldMap{
     abstract Vector2d getUpperRightCorner();
     abstract Vector2d getLowerLeftCorner();
 
-    abstract public boolean canMoveTo(Vector2d position);
+    public boolean canMoveTo(Vector2d position) {
+        for(Animal a : animals)
+            if (a.getPosition().equals(position)) return false;
+        return true;
+    }
     public boolean place(Animal animal){
-        if(!isOccupied(animal.getPosition())){
+        if(canMoveTo(animal.getPosition())){
             animals.add(animal);
             return true;
         }
         return false;
     }
-    abstract public boolean isOccupied(Vector2d position);
-    abstract public Object objectAt(Vector2d position);
+    public boolean isOccupied(Vector2d position) {
+        for(Animal a : animals)
+            if (a.getPosition().equals(position)) return true;
+        return false;
+    }
+    public Object objectAt(Vector2d position) {
+        for (Animal a : animals)
+            if (a.getPosition().equals(position)) return a;
+        return null;
+    }
 
     public String toString(){
         MapVisualizer map = new MapVisualizer((IWorldMap) this);

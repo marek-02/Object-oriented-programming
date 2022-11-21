@@ -47,25 +47,17 @@ public class Animal {
             case FORWARD -> {
                 Vector2d added = this.position.add(this.direction.toUnitVector());
                 if(map.canMoveTo(added)) {
-                    Object x = map.objectAt(added);
                     this.position = added;
-                    if (map instanceof GrassField && x instanceof Grass) {
-                        System.out.println("wszedł forward");
-                        ((GrassField) map).deleteGrass(added);
-                        ((GrassField) map).addNewGrass();
-                    }
+                    if (map instanceof GrassField && ((GrassField) map).deleteGrass(added)) ((GrassField) map).addNewGrass();
+
                 }
             }
             case BACKWARD -> {
                 Vector2d subtracted = this.position.subtract(this.direction.toUnitVector());
                 if(map.canMoveTo(subtracted)) {
-                    Object x = map.objectAt(subtracted);
                     this.position = subtracted;
-                    if (map instanceof GrassField && x instanceof Grass) {
-                        System.out.println("wszedł backward");
-                        ((GrassField) map).deleteGrass(subtracted);
-                        ((GrassField) map).addNewGrass();
-                    }
+                    if (map instanceof GrassField && ((GrassField) map).deleteGrass(subtracted)) ((GrassField) map).addNewGrass();
+
                 }
             }
         }

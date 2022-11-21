@@ -77,13 +77,13 @@ public class IWorldMapTest {
         Animal a2 = new Animal(r, new Vector2d(1, -3));
         Animal a3 = new Animal(r, new Vector2d(-1, 2));
         Animal a4 = new Animal(r, new Vector2d(-9, -13));
-        Animal a5 = new Animal(r, new Vector2d(6, 23));
-        Animal a6 = new Animal(r, new Vector2d(4, 19));
+        Animal a5 = new Animal(r, new Vector2d(23, 6));
+        Animal a6 = new Animal(r, new Vector2d(19, 4));
         Animal a7 = new Animal(r, new Vector2d(2, 2));
         assertTrue(r.place(a1));
-        assertTrue(r.place(a2));
-        assertTrue(r.place(a3));
-        assertTrue(r.place(a4));
+        assertFalse(r.place(a2));
+        assertFalse(r.place(a3));
+        assertFalse(r.place(a4));
         assertTrue(r.place(a5));
         assertTrue(r.place(a6));
         assertFalse(r.place(a7));

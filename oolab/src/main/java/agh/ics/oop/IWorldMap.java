@@ -22,7 +22,7 @@ public interface IWorldMap {
      *
      * @param animal
      *            The animal to place on the map.
-     * @return True if the animal was placed. The animal cannot be placed if the map is already occupied.
+     * @return True if the animal was placed. The animal cannot be placed if the map is already occupied. //powinno być canMoveTo a nie occupied
      */
     boolean place(Animal animal);
 

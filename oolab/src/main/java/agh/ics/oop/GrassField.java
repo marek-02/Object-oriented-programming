@@ -41,9 +41,13 @@ public class GrassField extends AbstractWorldMap {
         }
     }
 
-    public void deleteGrass(Vector2d position) {
+    public boolean deleteGrass(Vector2d position) {
         for(int i = 0; i < grass.size(); i++)
-            if(grass.get(i).getPosition().equals(position)) grass.remove(i);
+            if(grass.get(i).getPosition().equals(position)) {
+                grass.remove(i);
+                return true;
+            }
+        return false;
     }
 
     public void addNewGrass() {
@@ -79,17 +83,27 @@ public class GrassField extends AbstractWorldMap {
     }
     @Override
     public boolean canMoveTo(Vector2d position) {
-        for (Animal a : animals)
-            if (a.getPosition().equals(position)) return false;
-        upperRightCorner = position.upperRight(upperRightCorner);
-        lowerLeftCorner = position.lowerLeft(lowerLeftCorner);
-        return true;
+        if (super.canMoveTo(position)) {
+            upperRightCorner = position.upperRight(upperRightCorner);
+            lowerLeftCorner = position.lowerLeft(lowerLeftCorner);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean place(Animal animal){
+        if (super.place(animal)) {
+            deleteGrass(animal.getPosition());
+            addNewGrass();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        for (Animal a : animals)
-            if (a.getPosition().equals(position)) return true;
+        if (super.isOccupied(position)) return true;
         for (Grass g : grass)
             if (g.getPosition().equals(position)) return true;
         upperRightCorner = position.upperRight(upperRightCorner);
@@ -99,8 +113,8 @@ public class GrassField extends AbstractWorldMap {
 
     @Override
     public Object objectAt(Vector2d position) {
-        for (Animal a : animals)
-            if (a.getPosition().equals(position)) return a;
+        Object a = super.objectAt(position);
+        if (a != null) return a;
         for (Grass g : grass)
             if (g.getPosition().equals(position)) return g;
         return null;

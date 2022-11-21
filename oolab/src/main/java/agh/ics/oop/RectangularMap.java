@@ -18,18 +18,7 @@ public class RectangularMap extends AbstractWorldMap{
     }
 
     public boolean canMoveTo(Vector2d position){
-        return position.follows(lowerLeftCorner) && position.precedes(upperRightCorner) && !isOccupied(position);
-    }
-
-    public boolean isOccupied(Vector2d position){
-        for(Animal a : animals)
-            if (a.getPosition().equals(position)) return true;
-        return false;
-    }
-    public Object objectAt(Vector2d position){
-        for(Animal a : animals)
-            if (a.getPosition().equals(position)) return a;
-        return null;
+        return position.follows(lowerLeftCorner) && position.precedes(upperRightCorner) && super.canMoveTo(position);
     }
 
     public int getHeight() {
