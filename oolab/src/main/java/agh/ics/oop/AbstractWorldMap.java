@@ -11,8 +11,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     abstract Vector2d getLowerLeftCorner();
 
     public boolean canMoveTo(Vector2d position) {
-        System.out.println(position);
-        System.out.println(animals);
         if(animals.get(position) == null) return true;
         return false;
     }
@@ -38,7 +36,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
-        animals.remove(oldPosition);
-        animals.put(newPosition, new Animal(this, newPosition));
+        Animal a = animals.remove(oldPosition);
+        animals.put(newPosition, a);
     }
 }
