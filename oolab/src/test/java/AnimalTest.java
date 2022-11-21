@@ -10,20 +10,20 @@ public class AnimalTest {
     @Test
     public void orientationTest(){
         Animal oA = new Animal();
-        assertEquals(oA.toString(), "Położenie: (2,2), orientacja: Północ");
+        assertEquals(oA.toString(), "^");
         oA.move(MoveDirection.LEFT);
-        assertEquals(oA.toString(), "Położenie: (2,2), orientacja: Zachód");
+        assertEquals(oA.toString(), "<");
         oA.move(MoveDirection.RIGHT);
         oA.move(MoveDirection.RIGHT);
-        assertEquals(oA.toString(), "Położenie: (2,2), orientacja: Wschód");
+        assertEquals(oA.toString(), ">");
         oA.move(MoveDirection.RIGHT);
-        assertNotEquals(oA.toString(), "Położenie: (2,2), orientacja: Wschód");
+        assertNotEquals(oA.toString(), ">");
         oA.move(MoveDirection.LEFT);
         oA.move(MoveDirection.LEFT);
         oA.move(MoveDirection.LEFT);
-        assertNotEquals(oA.toString(), "Położenie: (2,2), orientacja: Północ");
+        assertNotEquals(oA.toString(), "^");
         oA.move(MoveDirection.RIGHT);
-        assertNotEquals(oA.toString(), "Położenie: (2,2), orientacja: Południe");
+        assertNotEquals(oA.toString(), "v");
     }
 
     @Test
@@ -52,26 +52,30 @@ public class AnimalTest {
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
-        assertEquals(mA.toString(), "Położenie: (2,4), orientacja: Północ");
+        assertTrue(mA.getPosition().equals(new Vector2d(2, 4)));
+        assertEquals(mA.toString(), "^");
         mA.move(MoveDirection.LEFT);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
-        assertEquals(mA.toString(), "Położenie: (0,4), orientacja: Zachód");
+        assertTrue(mA.getPosition().equals(new Vector2d(0, 4)));
+        assertEquals(mA.toString(), "<");
         mA.move(MoveDirection.BACKWARD);
         mA.move(MoveDirection.BACKWARD);
         mA.move(MoveDirection.BACKWARD);
         mA.move(MoveDirection.BACKWARD);
         mA.move(MoveDirection.BACKWARD);
         mA.move(MoveDirection.BACKWARD);
-        assertEquals(mA.toString(), "Położenie: (4,4), orientacja: Zachód");
+        assertTrue(mA.getPosition().equals(new Vector2d(4, 4)));
+        assertEquals(mA.toString(), "<");
         mA.move(MoveDirection.LEFT);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
         mA.move(MoveDirection.FORWARD);
-        assertEquals(mA.toString(), "Położenie: (4,0), orientacja: Południe");
+        assertTrue(mA.getPosition().equals(new Vector2d(4, 0)));
+        assertEquals(mA.toString(), "v");
     }
 
     public boolean properValue(String input) {

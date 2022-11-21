@@ -1,10 +1,13 @@
 package agh.ics.oop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Animal {
     private MapDirection direction;
     private Vector2d position;
     private IWorldMap map;
-
+    private List<IPositionChangeObserver> observers;
     public Animal(){
         this(new RectangularMap(4, 4));
     }
@@ -15,6 +18,7 @@ public class Animal {
         this.map = map;
         this.position = initialPosition;
         this.direction = MapDirection.NORTH;
+        this.observers = new ArrayList<>();
     }
 
     public MapDirection getDirection() {
@@ -29,6 +33,13 @@ public class Animal {
 
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
+    }
+
+    public void addObserver( IPositionChangeObserver obs){ observers.add(obs); }
+    public void removeObserver( IPositionChangeObserver obs){ observers.remove(obs); }
+
+    public void positionChanged(Vector2d older, Vector2d newer){
+        for(IPositionChangeObserver obs : observers) obs.positionChanged(older, newer);
     }
 
     @Override
@@ -47,17 +58,17 @@ public class Animal {
             case FORWARD -> {
                 Vector2d added = this.position.add(this.direction.toUnitVector());
                 if(map.canMoveTo(added)) {
+                    positionChanged(this.position, added);
                     this.position = added;
                     if (map instanceof GrassField && ((GrassField) map).deleteGrass(added)) ((GrassField) map).addNewGrass();
-
                 }
             }
             case BACKWARD -> {
                 Vector2d subtracted = this.position.subtract(this.direction.toUnitVector());
                 if(map.canMoveTo(subtracted)) {
+                    positionChanged(this.position, subtracted);
                     this.position = subtracted;
                     if (map instanceof GrassField && ((GrassField) map).deleteGrass(subtracted)) ((GrassField) map).addNewGrass();
-
                 }
             }
         }
