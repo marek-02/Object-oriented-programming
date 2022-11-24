@@ -86,11 +86,13 @@ public class AnimalTest {
     }
 
     @Test
-    public void parseTest(){
+    public void parseTest(){    // co to tesuje?
         String[] correct = {"b", "backward", "f", "forward", "r", "right", "l", "left"};
         String[] wrong = {"bac", "do tyłu", "przód", "forw", "turn right", "prawo", "leftt", "obróc w lewo"};
 
         for(String c : correct) assertTrue(properValue(c));
         for(String w : wrong) assertFalse(properValue(w));
     }
+
+    // brak testów OptionsParsera
 }
