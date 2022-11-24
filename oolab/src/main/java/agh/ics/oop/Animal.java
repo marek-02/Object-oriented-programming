@@ -6,7 +6,7 @@ public class Animal {
     private IWorldMap map;
 
     public Animal(){
-        this(new RectangularMap(4, 4));
+        this(new RectangularMap(4, 4)); // nie powinno tego być - zwierzę nie ma tworzyć własnego świata
     }
     public Animal(IWorldMap map){
         this(map, new Vector2d(2, 2));
@@ -20,7 +20,7 @@ public class Animal {
     public MapDirection getDirection() {
         return direction;
     }
-    public IWorldMap getMap() {
+    public IWorldMap getMap() { // po co?
         return map;
     }
     public Vector2d getPosition() {
