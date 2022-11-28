@@ -14,13 +14,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         if(animals.get(position) == null) return true;
         return false;
     }
-    public boolean place(Animal animal){
+    public boolean place(Animal animal) throws IllegalArgumentException {
         if(canMoveTo(animal.getPosition())){
             animals.put(animal.getPosition(), animal);
             animal.addObserver(this);
             return true;
         }
-        return false;
+        throw new IllegalArgumentException(animal.getPosition() + " is a place where you cannot place element");
+
     }
     public boolean isOccupied(Vector2d position) {
         if(animals.get(position) == null) return false;

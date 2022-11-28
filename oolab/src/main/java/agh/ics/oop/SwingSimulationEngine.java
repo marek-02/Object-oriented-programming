@@ -38,10 +38,10 @@ public class SwingSimulationEngine implements ActionListener{
         Vector2d ll = map.getLowerLeftCorner();
         int w = ur.getX() - ll.getX();
         int h = ur.getY() - ll.getY();
-        System.out.println(ur);
-        System.out.println(ll);
-        System.out.println(w);
-        System.out.println(h);
+//        System.out.println(ur);
+//        System.out.println(ll);
+//        System.out.println(w);
+//        System.out.println(h);
         int x = max(190, 20 * (w + 5));
         int y = max(20, 20 * (h + 4));
 

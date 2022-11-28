@@ -22,7 +22,7 @@ public class RectangularMapTest {
     public void runTest2(){
         MoveDirection[] directions = new OptionsParser().parse(new String[]{"f", "f", "f", "f", "r", "l", "r", "l", "f", "f", "r", "r", "f", "f", "b", "b", "f"});
         IWorldMap map = new RectangularMap(6, 6);
-        Vector2d[] positions = { new Vector2d(0,1), new Vector2d(4, 4), new Vector2d(4, 4), new Vector2d(2, 3) };
+        Vector2d[] positions = { new Vector2d(0,1), new Vector2d(4, 4), new Vector2d(2, 3) }; //new Vector2d(4, 4), musiałem wykomentować jeszcze tego vectora bo throwuje ex
         IEngine engine = new SimulationEngine(directions, map, positions);
         engine.run();
         assertTrue(map.isOccupied(new Vector2d(1, 3)));

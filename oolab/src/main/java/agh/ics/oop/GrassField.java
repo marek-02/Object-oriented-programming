@@ -5,14 +5,12 @@ import java.util.*;
 public class GrassField extends AbstractWorldMap {
     private int amountOfGrass;
     private Map<Vector2d, Grass> grass;
-    private Vector2d upperRightCorner;
-    private Vector2d lowerLeftCorner;
+    private MapBoundary observer;
 
     public GrassField(int amountOfGrass) {
         this.amountOfGrass = 0;
-        grass = new HashMap<>();
-        this.upperRightCorner = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
-        this.lowerLeftCorner = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        this.grass = new HashMap<>();
+        this.observer = new MapBoundary();
 
         int max = (int) Math.sqrt(amountOfGrass * 10);
         Random generator = new Random();
@@ -24,9 +22,8 @@ public class GrassField extends AbstractWorldMap {
 
             if(grass.get(v) == null) {
                 grass.put(v, new Grass(v));
+                observer.addElement(v);
                 this.amountOfGrass++;
-                upperRightCorner = v.upperRight(upperRightCorner);
-                lowerLeftCorner = v.lowerLeft(lowerLeftCorner);
             }
         }
     }
@@ -48,38 +45,25 @@ public class GrassField extends AbstractWorldMap {
 
             if(objectAt(v) == null) {
                 grass.put(v, new Grass(v));
-                upperRightCorner = v.upperRight(upperRightCorner);
-                lowerLeftCorner = v.lowerLeft(lowerLeftCorner);
+                observer.addElement(v);
                 return;
             }
         }
     }
     @Override
-    public boolean canMoveTo(Vector2d position) {
-        if (super.canMoveTo(position)) {
-            upperRightCorner = position.upperRight(upperRightCorner);
-            lowerLeftCorner = position.lowerLeft(lowerLeftCorner);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean place(Animal animal){
+    public boolean place(Animal animal) throws IllegalArgumentException {
         if (super.place(animal)) {
+            observer.addElement(animal.getPosition());
             if(deleteGrass(animal.getPosition())) addNewGrass();
             return true;
         }
-        return false;
+        throw new IllegalArgumentException(animal.getPosition() + " is a place where you cannot place element");
     }
 
     @Override
     public boolean isOccupied(Vector2d position) {
         if (super.isOccupied(position)) return true;
-        if (grass.get(position) != null) return true;
-        upperRightCorner = position.upperRight(upperRightCorner);
-        lowerLeftCorner = position.lowerLeft(lowerLeftCorner);
-        return false;
+        return grass.get(position) != null;
     }
 
     @Override
@@ -93,8 +77,9 @@ public class GrassField extends AbstractWorldMap {
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         super.positionChanged(oldPosition, newPosition);
         if(deleteGrass(newPosition)) addNewGrass();
+        this.observer.positionChanged(oldPosition, newPosition);
     }
 
-    public Vector2d getUpperRightCorner() { return upperRightCorner; }
-    public Vector2d getLowerLeftCorner() { return lowerLeftCorner; }
+    public Vector2d getUpperRightCorner() { return observer.getUpperRightCorner(); }
+    public Vector2d getLowerLeftCorner() { return observer.getLowerLeftCorner(); }
 }
