@@ -80,6 +80,10 @@ public class GrassField extends AbstractWorldMap {
         this.observer.positionChanged(oldPosition, newPosition);
     }
 
+    public MapBoundary getObserver() {
+        return observer;
+    }
+
     public Vector2d getUpperRightCorner() { return observer.getUpperRightCorner(); }
     public Vector2d getLowerLeftCorner() { return observer.getLowerLeftCorner(); }
 }

@@ -32,4 +32,8 @@ public class MapBoundary implements IPositionChangeObserver{
     public Vector2d getLowerLeftCorner() {
         return xVectors.first().lowerLeft(yVectors.first());
     }
+
+    public TreeSet<Vector2d> getxVectors() {
+        return xVectors;
+    }
 }
