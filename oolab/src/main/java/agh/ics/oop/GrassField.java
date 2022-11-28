@@ -11,7 +11,6 @@ public class GrassField extends AbstractWorldMap {
     public GrassField(int amountOfGrass) {
         this.amountOfGrass = 0;
         grass = new HashMap<>();
-        animals = new HashMap<>();
         this.upperRightCorner = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
         this.lowerLeftCorner = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -32,13 +31,13 @@ public class GrassField extends AbstractWorldMap {
         }
     }
 
-    public boolean deleteGrass(Vector2d position) {
+    private boolean deleteGrass(Vector2d position) {
         if(grass.get(position) == null) return false;
         grass.remove(position);
         return true;
     }
 
-    public void addNewGrass() {
+    private void addNewGrass() {
         int max = (int) Math.sqrt(amountOfGrass * 10);
         Random generator = new Random();
 
@@ -88,6 +87,12 @@ public class GrassField extends AbstractWorldMap {
         Object a = super.objectAt(position);
         if (a != null) return a;
         return grass.get(position);
+    }
+
+    @Override
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        super.positionChanged(oldPosition, newPosition);
+        if(deleteGrass(newPosition)) addNewGrass();
     }
 
     public Vector2d getUpperRightCorner() { return upperRightCorner; }

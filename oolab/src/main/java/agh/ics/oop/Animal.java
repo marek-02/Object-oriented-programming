@@ -38,7 +38,7 @@ public class Animal {
     public void addObserver( IPositionChangeObserver obs){ observers.add(obs); }
     public void removeObserver( IPositionChangeObserver obs){ observers.remove(obs); }
 
-    public void positionChanged(Vector2d older, Vector2d newer){
+    private void positionChanged(Vector2d older, Vector2d newer){
         for(IPositionChangeObserver obs : observers) obs.positionChanged(older, newer);
     }
 
@@ -52,23 +52,22 @@ public class Animal {
         };
     }
     public void move(MoveDirection direction){
+        Vector2d older = this.position;
         switch (direction) {
             case RIGHT -> this.direction = this.direction.next();
             case LEFT -> this.direction = this.direction.previous();
             case FORWARD -> {
                 Vector2d added = this.position.add(this.direction.toUnitVector());
                 if(map.canMoveTo(added)) {
-                    positionChanged(this.position, added);
                     this.position = added;
-                    if (map instanceof GrassField && ((GrassField) map).deleteGrass(added)) ((GrassField) map).addNewGrass();
+                    positionChanged(older, this.position);
                 }
             }
             case BACKWARD -> {
                 Vector2d subtracted = this.position.subtract(this.direction.toUnitVector());
                 if(map.canMoveTo(subtracted)) {
-                    positionChanged(this.position, subtracted);
                     this.position = subtracted;
-                    if (map instanceof GrassField && ((GrassField) map).deleteGrass(subtracted)) ((GrassField) map).addNewGrass();
+                    positionChanged(older, this.position);
                 }
             }
         }

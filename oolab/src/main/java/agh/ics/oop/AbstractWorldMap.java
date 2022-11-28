@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
-    protected Map<Vector2d, Animal> animals;
+    protected Map<Vector2d, Animal> animals = new HashMap<>();;
 
     abstract Vector2d getUpperRightCorner();
     abstract Vector2d getLowerLeftCorner();

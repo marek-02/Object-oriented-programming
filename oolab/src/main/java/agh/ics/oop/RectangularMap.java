@@ -15,7 +15,6 @@ public class RectangularMap extends AbstractWorldMap{
         this.width = w;
         this.upperRightCorner = new Vector2d(width, height);
         this.lowerLeftCorner = new Vector2d(0, 0);
-        this.animals = new HashMap<>();
     }
 
     public boolean canMoveTo(Vector2d position){
