@@ -59,8 +59,8 @@ public class GuiSimulationEngine implements IEngine, IGrassFieldObserver, Runnab
         maxX = map.getUpperRightCorner().getX();
         minY = map.getLowerLeftCorner().getY();
         maxY = map.getUpperRightCorner().getY();
-        sceneHeight = ((maxY - minY) + 5) * height;
-        sceneWidth = ((maxX - minX) + 5) * width;
+        sceneHeight = ((maxY - minY) + 4) * height;
+        sceneWidth = ((maxX - minX) + 4) * width;
         this.gridPane = gridPane;
 
         primaryStage.show();
@@ -147,8 +147,8 @@ public class GuiSimulationEngine implements IEngine, IGrassFieldObserver, Runnab
                 minX = Math.min(x, minX);
                 maxY = Math.max(y, maxY);
                 minY = Math.min(y, minY);
-                sceneHeight = ((maxY - minY) + 5) * height;
-                sceneWidth = ((maxX - minX) + 5) * width;
+                sceneHeight = ((maxY - minY) + 4) * height;
+                sceneWidth = ((maxX - minX) + 4) * width;
                 primaryStage.setWidth(sceneWidth);
                 primaryStage.setHeight(sceneHeight);
                 Node node = gridPane.getChildren().get(0); //pierwszy dzieciak trzyma linie
