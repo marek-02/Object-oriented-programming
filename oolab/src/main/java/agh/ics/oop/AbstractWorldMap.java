@@ -7,8 +7,8 @@ import java.util.Map;
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
     protected Map<Vector2d, Animal> animals = new HashMap<>();;
 
-    abstract Vector2d getUpperRightCorner();
-    abstract Vector2d getLowerLeftCorner();
+    abstract public Vector2d getUpperRightCorner();
+    abstract public Vector2d getLowerLeftCorner();
 
     public boolean canMoveTo(Vector2d position) {
         if(animals.get(position) == null) return true;
@@ -40,4 +40,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         Animal a = animals.remove(oldPosition);
         animals.put(newPosition, a);
     }
+
+    public Vector2d[] getMapElementPositions() { return animals.keySet().toArray(new Vector2d[0]); }
 }

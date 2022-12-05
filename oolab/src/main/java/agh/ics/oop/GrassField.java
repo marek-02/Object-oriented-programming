@@ -5,12 +5,13 @@ import java.util.*;
 public class GrassField extends AbstractWorldMap {
     private int amountOfGrass;
     private Map<Vector2d, Grass> grass;
-    private MapBoundary observer;
+    private List<IGrassFieldObserver> observers;
 
     public GrassField(int amountOfGrass) {
         this.amountOfGrass = 0;
         this.grass = new HashMap<>();
-        this.observer = new MapBoundary();
+        this.observers = new ArrayList<>();
+        addObserver(new MapBoundary());
 
         int max = (int) Math.sqrt(amountOfGrass * 10);
         Random generator = new Random();
@@ -22,11 +23,14 @@ public class GrassField extends AbstractWorldMap {
 
             if(grass.get(v) == null) {
                 grass.put(v, new Grass(v));
-                observer.addElement(v);
+                for (IGrassFieldObserver observer : observers) observer.addElement(v);
                 this.amountOfGrass++;
             }
         }
     }
+
+    public void addObserver( IGrassFieldObserver obs){ observers.add(obs); }
+    public void removeObserver( IGrassFieldObserver obs){ if(observers.size() > 1) observers.remove(obs); }
 
     private boolean deleteGrass(Vector2d position) {
         if(grass.get(position) == null) return false;
@@ -45,7 +49,7 @@ public class GrassField extends AbstractWorldMap {
 
             if(objectAt(v) == null) {
                 grass.put(v, new Grass(v));
-                observer.addElement(v);
+                for (IGrassFieldObserver observer : observers) observer.addElement(v);
                 return;
             }
         }
@@ -53,8 +57,8 @@ public class GrassField extends AbstractWorldMap {
     @Override
     public boolean place(Animal animal) throws IllegalArgumentException {
         if (super.place(animal)) {
-            observer.addElement(animal.getPosition());
             if(deleteGrass(animal.getPosition())) addNewGrass();
+            for (IGrassFieldObserver observer : observers) observer.addElement(animal.getPosition());
             return true;
         }
         throw new IllegalArgumentException(animal.getPosition() + " is a place where you cannot place element");
@@ -77,13 +81,18 @@ public class GrassField extends AbstractWorldMap {
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         super.positionChanged(oldPosition, newPosition);
         if(deleteGrass(newPosition)) addNewGrass();
-        this.observer.positionChanged(oldPosition, newPosition);
+        for (IGrassFieldObserver observer : observers) observer.positionChanged(oldPosition, newPosition);
     }
 
-    public MapBoundary getObserver() {
-        return observer;
+    @Override
+    public Vector2d[] getMapElementPositions() {
+        Vector2d[] animalsPositions = super.getMapElementPositions();
+        HashSet<Vector2d> elementsPositions = new HashSet<>();
+        elementsPositions.addAll(Arrays.asList(animalsPositions));
+        elementsPositions.addAll(grass.keySet());
+        return elementsPositions.toArray(new Vector2d[0]);
     }
 
-    public Vector2d getUpperRightCorner() { return observer.getUpperRightCorner(); }
-    public Vector2d getLowerLeftCorner() { return observer.getLowerLeftCorner(); }
+    public Vector2d getUpperRightCorner() { return observers.get(0).getUpperRightCorner(); }
+    public Vector2d getLowerLeftCorner() { return observers.get(0).getLowerLeftCorner(); }
 }

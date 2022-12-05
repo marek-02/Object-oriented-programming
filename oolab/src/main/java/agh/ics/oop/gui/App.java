@@ -2,71 +2,84 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.layout.GridPane;
 
 public class App extends Application {
+    private MoveDirection[] directions;
+    private AbstractWorldMap map;
+    private Vector2d[] positions;
+    private int height;
+    private int width;
+    private int moveDelay;
+    private GridPane gridPane;
+    private Scene scene;
+    private Button b;
+    private TextField textField;
+    private VBox vBox;
     @Override
     public void start(Stage primaryStage) {
         try {
-            MoveDirection[] directions = new OptionsParser().parse(new String[]{"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"});
-            GrassField map = new GrassField(10);
-            Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
-            IEngine engine = new SimulationEngine(directions, map, positions);
-            engine.run();
+            GuiSimulationEngine engine = new GuiSimulationEngine(directions, map, positions, primaryStage, gridPane, moveDelay, width, height);
+            EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                    directions = new OptionsParser().parse(new String[]{"f", "b", "l", "l", "b", "b"});
+                    String newMoves = textField.getText();
+                    engine.setDirections(new OptionsParser().parse(newMoves.split(" ")));
+                    textField.setText("");
+                    textField.requestFocus();
+                    new Thread(engine).start();
+                }
+            };
+            b.setOnAction(event);
 
-            GridPane gridPane = new GridPane();
-            gridPane.setGridLinesVisible(true);
+
             int minX = map.getLowerLeftCorner().getX();
             int maxX = map.getUpperRightCorner().getX();
             int minY = map.getLowerLeftCorner().getY();
             int maxY = map.getUpperRightCorner().getY();
-            Label indexZero = new Label("y/x");
-            int width = 20;
-            int height = 20;
-            gridPane.add(indexZero, 0, 0, 1, 1);
-            gridPane.getColumnConstraints().add(new ColumnConstraints(width));
-            gridPane.getRowConstraints().add(new RowConstraints(height));
-
-            int start = 1;
-            int i = minX;
-            while (i <= maxX) {
-                Label c = new Label("" + i);
-                gridPane.add(c, start, 0, 1, 1);
-                GridPane.setHalignment(c, HPos.CENTER);
-                gridPane.getColumnConstraints().add(new ColumnConstraints(width));
-                i++;
-                start++;
-            }
-
-            start = 1;
-            i = maxY;
-            while (i >= minY) {
-                Label r = new Label("" + i);
-                gridPane.add(r, 0, start, 1, 1);
-                GridPane.setHalignment(r, HPos.CENTER);
-                gridPane.getRowConstraints().add(new RowConstraints(height));
-                i--;
-                start++;
-            }
-            Vector2d[] grassAndAnimals = map.getObserver().getxVectors().toArray(new Vector2d[0]);
-            for (Vector2d position : grassAndAnimals) {
-                Object object = map.objectAt(position);
-                Label label = new Label(object.toString());
-                gridPane.add(label, 1 + position.x - minX, 1 + maxY - position.y, 1, 1);
-            }
-
-            Scene scene = new Scene(gridPane, 400, 400);
+            int sceneHeight = ((maxY - minY) + 5) * height;
+            int sceneWidth = ((maxX - minX) + 5) * width;
+            scene = new Scene(vBox, sceneWidth, sceneHeight);
             primaryStage.setScene(scene);
-            primaryStage.show();
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    public void init() {
+        directions = new OptionsParser().parse(new String[]{"f", "b", "l", "l", "b", "b"});
+        map = new GrassField(10);
+        positions = new Vector2d[] { new Vector2d(0,0), new Vector2d(3,4) };
+        moveDelay = 500;
+        height = 50;
+        width = 50;
+        //////
+        gridPane = new GridPane();
+        textField = new TextField("");
+        textField.setPrefWidth(300);
+        textField.setPrefHeight(50);
+        b = new Button("Start");
+        b.setPrefHeight(50);
+        b.setVisible(true);
+        b.setDefaultButton(true);
+        HBox hBox = new HBox(20);
+        hBox.getChildren().add(textField);
+        hBox.getChildren().add(b);
+        vBox = new VBox(10);
+        vBox.getChildren().add(hBox);
+        vBox.getChildren().add(gridPane);
     }
 }
 

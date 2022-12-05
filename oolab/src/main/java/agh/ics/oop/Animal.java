@@ -60,16 +60,15 @@ public class Animal {
                 Vector2d added = this.position.add(this.direction.toUnitVector());
                 if(map.canMoveTo(added)) {
                     this.position = added;
-                    positionChanged(older, this.position);
                 }
             }
             case BACKWARD -> {
                 Vector2d subtracted = this.position.subtract(this.direction.toUnitVector());
                 if(map.canMoveTo(subtracted)) {
                     this.position = subtracted;
-                    positionChanged(older, this.position);
                 }
             }
         }
+        positionChanged(older, this.position);
     }
 }
