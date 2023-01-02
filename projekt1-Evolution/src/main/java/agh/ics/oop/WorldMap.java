@@ -3,7 +3,6 @@ package agh.ics.oop;
 import java.util.*;
 
 public class WorldMap {
-    private boolean X = false;
     private int width;
     private int height;
     private int day;
@@ -118,16 +117,12 @@ public class WorldMap {
     private void findFieldForCorpses(Field start, int fieldIndex) {
         Field f = start;
         while(fieldIndex >= 0) {
-            //if(head20.getIndexDeads() != 125) System.out.println("CO TU SIE DZIEJE????  " + head20.getIndexDeads());
             if(!f.hasPlant()) {
                 if(fieldIndex == 0) {
                     f.addPlant();
                     return;
                 } else fieldIndex--;
             }
-//            if(f.getNextDeads() == null) {
-//                System.out.println(f.getIndexDeads() + " " + f.howManyDeads() + " " + fieldIndex +  " " +  freeAttractiveFields + " " + freeNormalFields + " " + numberOfPlants + " " + head20.getIndexDeads());
-//            }
             f = f.getNextDeads();
         }
     }
@@ -184,7 +179,7 @@ public class WorldMap {
     }
 
     private void placeAnimal(int energy, int[] gens, int x, int y) {
-        Animal a = new Animal(energy, gens, x, y);
+        Animal a = new Animal(energy, gens, x, y, allAnimalsIndex);
         allAnimals.add(a);
         fields[y][x].addAnimal(allAnimalsIndex++);
         if(numberOfGenotypes.containsKey(gens)) numberOfGenotypes.replace(gens, numberOfGenotypes.get(gens) + 1);
@@ -320,7 +315,7 @@ public class WorldMap {
                     ArrayList<Integer> a = fields[y][x].getAnimals();
                     int n = fields[y][x].numberOfAnimals();
                     if(n > 0) {
-                        allAnimals.get(a.get(0)).changeEnergy(energyFromPlant);
+                        allAnimals.get(a.get(0)).eatPlant(energyFromPlant);
                         deletePlant(x, y);
                     }
                 }
@@ -396,9 +391,7 @@ public class WorldMap {
     public void day() {
         sortAnimals();
         day++;
-        //System.out.println("Przed movnieciem: " + day + " " + head20.getIndexDeads());
         moveAnimals();
-        //System.out.println("Po movnieciu: " + day + " " + head20.getIndexDeads());
         feedAnimals();
         reproduceAnimals();
         growingPlants(dayPlants);
@@ -423,6 +416,13 @@ public class WorldMap {
             animals.add(allAnimals.get(index));
         }
         return animals;
+    }
+
+    public Animal getRandomAnimalFromField(int x, int y) {
+        Field f = fields[y][x];
+        if(f.numberOfAnimals() == 0) return null;
+        int choosenIndexOfAnimal = new Random().nextInt(f.numberOfAnimals());
+        return allAnimals.get(f.getAnimals().get(choosenIndexOfAnimal));
     }
 
     public int getBirthEnergy() {
@@ -454,12 +454,8 @@ public class WorldMap {
         return free;
     }
 
-    public String getMostPopularGenotype() {
-        int max = 0;
-        int[] best = {};
-        for(Map.Entry<int[],Integer> entry : numberOfGenotypes.entrySet()) {
-            if(entry.getValue() > max) best = entry.getKey();
-        }
+    public String getMostPopularGenotypeAsString() {
+        int[] best = getMostPopularGenotype();
         String s = "[";
         int i;
         for(i = 0; i < best.length - 1; i++) {
@@ -467,6 +463,15 @@ public class WorldMap {
         }
         s += best[i] +  "]";
         return s;
+    }
+
+    public int[] getMostPopularGenotype() {
+        int max = -1;
+        int[] best = {};
+        for(Map.Entry<int[],Integer> entry : numberOfGenotypes.entrySet()) {
+            if(entry.getValue() > max) best = entry.getKey();
+        }
+        return best;
     }
 
     public double averageEnergyForLiving() {

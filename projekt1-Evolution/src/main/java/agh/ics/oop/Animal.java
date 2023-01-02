@@ -1,5 +1,6 @@
 package agh.ics.oop;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class Animal {
@@ -13,8 +14,9 @@ public class Animal {
     private int age;
     private int eatenPlants;
     private int deathDay;
+    private int animalIndex;
 
-    public Animal(int e, int[] gens, int x, int y) {
+    public Animal(int e, int[] gens, int x, int y, int index) {
         this.energy = e;
         Random generator = new Random();
         this.direction = generator.nextInt(8);
@@ -26,6 +28,7 @@ public class Animal {
         this.deathDay = -1;
         this.xPosition = x;
         this.yPosition = y;
+        this.animalIndex = index;
     }
 
     public int getDeathDay() {
@@ -43,6 +46,10 @@ public class Animal {
     public int getKids() {
         return kids;
     }
+    public void eatPlant(int x) {
+        eatenPlants++;
+        changeEnergy(x);
+    }
 
     public void changeEnergy(int x) {
         energy += x;
@@ -58,12 +65,31 @@ public class Animal {
         return gens[index];
     }
 
+    public String getStringGens() {
+        String s = "";
+        int i;
+        for(i = 0; i < gens.length - 1; i++){
+            if(i == genIndex) s += gens[i] + ", <- current gen\n";
+            else s += gens[i] + ", \n";
+        }
+        if(i == genIndex) s += gens[i] + " <- current gen";
+        else s += gens[i];
+        return s;
+    }
+
+    public int[] getGens() {
+        return gens;
+    }
+
+    public int getEatenPlants() { return eatenPlants; }
+
     public void rotation180Degree() {
         direction = (direction + 4) % 8;
     }
 
     public void nextDay() {
         changeEnergy(-1);
+        age++;
     }
 
     public void bornKid(int birthEnergy) {
@@ -92,5 +118,22 @@ public class Animal {
 
     public boolean isStrong(int fullEnergy) {
         return energy >= 2 * fullEnergy;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+
+        if(!(other instanceof Animal)) return false;
+
+        Animal a = (Animal) other;
+        return a.animalIndex == this.animalIndex;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this);
     }
 }
