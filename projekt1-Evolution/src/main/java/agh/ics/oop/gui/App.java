@@ -60,7 +60,7 @@ public class App extends Application {
             @Override
             public void handle(ActionEvent event) {
                 int myIndex = threads.size();
-                maps.add(currentMap);
+                maps.add(new WorldMap(currentMap));
                 engines.add(new GuiSimulationEngine(maps.get(myIndex), csv, 100));
                 threads.add(new Thread(engines.get(myIndex)));
 
@@ -130,6 +130,8 @@ public class App extends Application {
                 else if(newValue.intValue() == 4) {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Select file with configuration");
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files", "*.json");
+                    fileChooser.getExtensionFilters().add(extFilter);
                     Stage stageFileChooser = new Stage();
                     stageFileChooser.setWidth(400);
                     stageFileChooser.setHeight(400);

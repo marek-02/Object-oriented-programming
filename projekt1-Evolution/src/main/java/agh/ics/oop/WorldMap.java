@@ -22,11 +22,58 @@ public class WorldMap {
     private int numberOfAttractiveFields;
     private int freeAttractiveFields;
     private int freeNormalFields;
+    private int startPlants;
+    private int startAnimals;
+    private int startEnergy;
     private TypeOfPlanet typeOfPlanet;
     private TypeOfPlants typeOfPlants;
     private TypeOfMutation typeOfMutation;
     private TypeOfMovement typeOfMovement;
     private Map<int[], Integer> numberOfGenotypes;
+
+    public WorldMap(WorldMap map) {
+        this.width = map.width;             //szerokość od 0 do width-1
+        this.height = map.height;           //wysokość od 0 do height-1
+        this.day = 0;
+        this.energyFromPlant = map.energyFromPlant;
+        this.dayPlants = map.dayPlants;
+        this.fullEnergy = map.fullEnergy;
+        this.birthEnergy = map.birthEnergy;
+        this.minMutation = map.minMutation;
+        this.maxMutation = map.maxMutation;
+        this.genomLength = map.genomLength;
+        this.fields = new Field[height][width];
+        for(int y = 0; y < height; y++)
+            for(int x = 0; x < width; x++) fields[y][x] = new Field();
+        this.allAnimals = new ArrayList<>();
+        this.allAnimalsIndex = 0;
+        this.numberOfPlants = 0;
+        this.numberOfGenotypes = new HashMap<>();
+        this.typeOfPlanet = map.typeOfPlanet;
+        this.typeOfPlants = map.typeOfPlants;
+        this.typeOfMutation = map.typeOfMutation;
+        this.typeOfMovement = map.typeOfMovement;
+        this.startAnimals = map.startAnimals;
+        this.startPlants = map.startPlants;
+        this.startEnergy = map.startEnergy;
+        if(typeOfPlants == TypeOfPlants.EQATOR) {
+            int a = 2 * height / 5;
+            int b = 3 * height / 5;
+            this.numberOfAttractiveFields = (b - a) * width;
+            this.freeAttractiveFields = this.numberOfAttractiveFields;
+            this.freeNormalFields = width * height -  this.freeAttractiveFields;
+            setFieldsAttractiveForEquator(a, b);
+        } else {
+            this.numberOfAttractiveFields = width * height / 5;
+            this.freeAttractiveFields = this.numberOfAttractiveFields;
+            this.freeNormalFields = width * height -  this.freeAttractiveFields;
+            head0 = fields[0][0];
+            head20 = fields[numberOfAttractiveFields / width][numberOfAttractiveFields % width];
+            setDeadsLinkedList();
+        }
+        this.growingPlants(startPlants);
+        this.placeStartAnimals(startAnimals, startEnergy, genomLength);
+    }
 
     public WorldMap(int width, int height, int energyFromPlant, int startPlants, int dayPlants, int startAnimals, int startEnergy, int fullEnergy,
                     int birthEnergy, int minMutation, int maxMutation,
@@ -52,6 +99,9 @@ public class WorldMap {
         this.typeOfPlants = typeOfPlants;
         this.typeOfMutation = typeOfMutation;
         this.typeOfMovement = typeOfMovement;
+        this.startAnimals = startAnimals;
+        this.startPlants = startPlants;
+        this.startEnergy = startEnergy;
         if(typeOfPlants == TypeOfPlants.EQATOR) {
             int a = 2 * height / 5;
             int b = 3 * height / 5;
