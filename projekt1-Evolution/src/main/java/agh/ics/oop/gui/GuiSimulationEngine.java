@@ -48,7 +48,8 @@ public class GuiSimulationEngine implements Runnable {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
                 writer.write("day; number of plants; number of animals; number of free fields; the most popular genotype; average energy; average life length of deads\n");
                 writer.close();
-            } catch (IOException ex) {
+            } catch (Exception ex) {
+                this.csv = false;
                 System.out.println("Wrong csv file.");
             }
         }
@@ -281,8 +282,6 @@ public class GuiSimulationEngine implements Runnable {
                 String line;
                 while ((line = reader.readLine()) != null)
                     s += line + '\n';
-            } catch (IOException e) {
-                throw new IOException("");
             }
             s += map.getDay() + "; " + map.getNumberOfPlants() + "; " + map.getNumberOfAnimalsOnTheMap() + "; " + map.getNumberOfFreeFields() +
                     "; " + map.getMostPopularGenotypeAsString() + "; " + map.averageEnergyForLiving() + "; " + map.averageLifeTimeForDeads() + '\n';
@@ -290,8 +289,8 @@ public class GuiSimulationEngine implements Runnable {
             writer.write(s);
 
             writer.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (Exception ex) {
+            System.out.println("Problems with CSV file.");
         }
     }
 }

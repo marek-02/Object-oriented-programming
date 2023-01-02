@@ -143,7 +143,7 @@ public class App extends Application {
                                 while ((line = reader.readLine()) != null)
                                     jsonString += line + '\n';
                             } catch (IOException e) {
-                                throw new JSONException("");
+                                throw new JSONException("Couldn't read selected file.");
                             }
                             JSONObject jsonObject = new JSONObject(jsonString);
                             width = getSafeInt(jsonObject, "width", width);
