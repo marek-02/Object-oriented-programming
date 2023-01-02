@@ -69,7 +69,6 @@ public class Animal {
     public void bornKid(int birthEnergy) {
         kids++;
         changeEnergy(-birthEnergy);
-        changeEnergy(-birthEnergy);
     }
 
     public void die(int day) {
@@ -77,5 +76,21 @@ public class Animal {
     }
     public boolean isAlive() {
         return energy > 0;
+    }
+
+    public boolean isWeak(int birthEnergy) {
+        return energy <= birthEnergy;
+    }
+
+    public boolean isNormal(int birthEnergy, int fullEnergy) {
+        return energy > birthEnergy && energy < fullEnergy;
+    }
+
+    public boolean isFed(int fullEnergy) {
+        return energy >= fullEnergy && energy < 2 * fullEnergy;
+    }
+
+    public boolean isStrong(int fullEnergy) {
+        return energy >= 2 * fullEnergy;
     }
 }

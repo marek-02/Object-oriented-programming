@@ -3,6 +3,7 @@ package agh.ics.oop;
 import java.util.*;
 
 public class WorldMap {
+    private boolean X = false;
     private int width;
     private int height;
     private int day;
@@ -26,6 +27,7 @@ public class WorldMap {
     private TypeOfPlants typeOfPlants;
     private TypeOfMutation typeOfMutation;
     private TypeOfMovement typeOfMovement;
+    private Map<int[], Integer> numberOfGenotypes;
 
     public WorldMap(int width, int height, int energyFromPlant, int startPlants, int dayPlants, int startAnimals, int startEnergy, int fullEnergy,
                     int birthEnergy, int minMutation, int maxMutation,
@@ -41,34 +43,43 @@ public class WorldMap {
         this.maxMutation = maxMutation;
         this.genomLength = genomLength;
         this.fields = new Field[height][width];
+        for(int y = 0; y < height; y++)
+            for(int x = 0; x < width; x++) fields[y][x] = new Field();
         this.allAnimals = new ArrayList<>();
         this.allAnimalsIndex = 0;
         this.numberOfPlants = 0;
+        this.numberOfGenotypes = new HashMap<>();
+        this.typeOfPlanet = typeOfPlanet;
+        this.typeOfPlants = typeOfPlants;
+        this.typeOfMutation = typeOfMutation;
+        this.typeOfMovement = typeOfMovement;
         if(typeOfPlants == TypeOfPlants.EQATOR) {
             int a = 2 * height / 5;
             int b = 3 * height / 5;
             this.numberOfAttractiveFields = (b - a) * width;
             this.freeAttractiveFields = this.numberOfAttractiveFields;
             this.freeNormalFields = width * height -  this.freeAttractiveFields;
+            setFieldsAttractiveForEquator(a, b);
         } else {
-            setDeadsLinkedList();
             this.numberOfAttractiveFields = width * height / 5;
             this.freeAttractiveFields = this.numberOfAttractiveFields;
             this.freeNormalFields = width * height -  this.freeAttractiveFields;
             head0 = fields[0][0];
             head20 = fields[numberOfAttractiveFields / width][numberOfAttractiveFields % width];
+            setDeadsLinkedList();
         }
-        this.typeOfPlanet = typeOfPlanet;
-        this.typeOfPlants = typeOfPlants;
-        this.typeOfMutation = typeOfMutation;
-        this.typeOfMovement = typeOfMovement;
         this.growingPlants(startPlants);
         this.placeStartAnimals(startAnimals, startEnergy, genomLength);
     }
 
+    private void setFieldsAttractiveForEquator(int a, int b) {
+        for(int y = a + 1; y <= b; y++)
+            for(int x = 0; x < width; x++) fields[y][x].makeItAttractive();
+    }
+
     private void setDeadsLinkedList() {
-        int prevX = width - 1;
-        int prevY = height - 1;
+        int prevX = 0;
+        int prevY = 0;
         int nextX = 0;
         int nextY = 0;
         for(int y = 0; y < height; y++)
@@ -79,12 +90,13 @@ public class WorldMap {
                 nextX++;
                 if(nextX == width) {
                     nextX = 0;
-                    nextY++;
+                    nextY = Math.min(nextY + 1, height - 1);
                 }
                 fields[y][x].setNextDeads(fields[nextY][nextX]);
                 int newIndex = y * width + x;
                 fields[y][x].setIndexDeads(newIndex);
                 if(newIndex < numberOfAttractiveFields) fields[y][x].makeItAttractive();
+                else if(newIndex == numberOfAttractiveFields) head20 = fields[y][x];
             }
         fields[0][0].setPrevDeads(null);
         fields[height - 1][width - 1].setNextDeads(null);
@@ -95,7 +107,7 @@ public class WorldMap {
                 if(!fields[y][x].hasPlant()) {
                     if(fieldIndex == 0) {
                         fields[y][x].addPlant();
-                        return - 1;
+                        return -1;
                     } else fieldIndex--;
                 }
             }
@@ -106,12 +118,16 @@ public class WorldMap {
     private void findFieldForCorpses(Field start, int fieldIndex) {
         Field f = start;
         while(fieldIndex >= 0) {
+            //if(head20.getIndexDeads() != 125) System.out.println("CO TU SIE DZIEJE????  " + head20.getIndexDeads());
             if(!f.hasPlant()) {
                 if(fieldIndex == 0) {
                     f.addPlant();
                     return;
                 } else fieldIndex--;
             }
+//            if(f.getNextDeads() == null) {
+//                System.out.println(f.getIndexDeads() + " " + f.howManyDeads() + " " + fieldIndex +  " " +  freeAttractiveFields + " " + freeNormalFields + " " + numberOfPlants + " " + head20.getIndexDeads());
+//            }
             f = f.getNextDeads();
         }
     }
@@ -171,6 +187,8 @@ public class WorldMap {
         Animal a = new Animal(energy, gens, x, y);
         allAnimals.add(a);
         fields[y][x].addAnimal(allAnimalsIndex++);
+        if(numberOfGenotypes.containsKey(gens)) numberOfGenotypes.replace(gens, numberOfGenotypes.get(gens) + 1);
+        else numberOfGenotypes.put(gens, 1);
     }
 
     private void placeStartAnimals(int startAnimals, int energy, int genomLength) {
@@ -213,29 +231,35 @@ public class WorldMap {
     }
 
     private void changeDeadsLinkedList(Field f) {
-        while(f.getNextDeads() != null && f.howManyDeads() > f.getNextDeads().howManyDeads())
+        while(f.getNextDeads() != null && f.howManyDeads() > f.getNextDeads().howManyDeads()) {
             swapWithNext(f);
+        }
+
     }
 
     private void swapWithNext(Field f) {
-        Field prev = f.getPrevDeads();
-        Field next = f.getNextDeads();
-        if(prev != null) prev.setNextDeads(next);
-        next.setPrevDeads(prev);
-        next.setNextDeads(f);
-        f.setPrevDeads(next);
-        f.setNextDeads(next.getNextDeads());
-        if(next.getNextDeads() != null) next.getNextDeads().setPrevDeads(f);
-        int tmp = next.getIndexDeads();
-        next.setIndexDeads(f.getIndexDeads());
+        int tmp = f.getNextDeads().getIndexDeads();
+        if(f.getPrevDeads() != null) f.getPrevDeads().setNextDeads(f.getNextDeads());
+        else head0 = f.getNextDeads();
+        f.getNextDeads().setPrevDeads(f.getPrevDeads());
+        f.setNextDeads(f.getNextDeads().getNextDeads());
+        if(f.getNextDeads() != null) f.getNextDeads().setPrevDeads(f);
+        f.getPrevDeads().getNextDeads().setNextDeads(f);
+        f.setPrevDeads(f.getPrevDeads().getNextDeads());
+
+
+
+        if(f.getIndexDeads() == numberOfAttractiveFields) head20 = f.getPrevDeads();
+        f.getPrevDeads().setIndexDeads(f.getIndexDeads());
         f.setIndexDeads(tmp);
-        if(f.isAttractive() && !next.isAttractive()) {
+        if(tmp == numberOfAttractiveFields) {
+            head20 = f;
             f.noLongerAttractive();
-            next.makeItAttractive();
-            if(f.hasPlant() && !next.hasPlant()) {
+            f.getPrevDeads().makeItAttractive();
+            if(f.hasPlant() && !f.getPrevDeads().hasPlant()) {
                 freeAttractiveFields++;
                 freeNormalFields--;
-            } else if (!f.hasPlant() && next.hasPlant()) {
+            } else if (!f.hasPlant() && f.getPrevDeads().hasPlant()) {
                 freeAttractiveFields--;
                 freeNormalFields++;
             }
@@ -273,16 +297,6 @@ public class WorldMap {
         fields[newY][newX].addAnimal(index);
     }
 
-    class SortAnimals implements Comparator<Integer> {
-        public int compare(Integer animalIndex1, Integer animalIndex2) {
-            Random generator = new Random();
-            int energyDiff = allAnimals.get(animalIndex1).getEnergy() - allAnimals.get(animalIndex2).getEnergy();
-            int ageDiff = allAnimals.get(animalIndex1).getAge() - allAnimals.get(animalIndex2).getAge();
-            int kidsDiff = allAnimals.get(animalIndex1).getKids() - allAnimals.get(animalIndex2).getKids();
-            return energyDiff != 0 ? energyDiff : ageDiff != 0 ? ageDiff : kidsDiff != 0 ? kidsDiff : generator.nextInt(3) - 1;
-        }
-    }
-
     private void deletePlant(int x, int y) {
         fields[y][x].deletePlant();
         if(typeOfPlants == TypeOfPlants.EQATOR) {
@@ -291,9 +305,12 @@ public class WorldMap {
             if(y > a && a <= b) freeAttractiveFields++;
             else freeNormalFields++;
         } else {
-            if(fields[y][x].getIndexDeads() < numberOfAttractiveFields) freeAttractiveFields--;
-            else freeNormalFields--;
+            if(fields[y][x].getIndexDeads() < numberOfAttractiveFields) {
+                freeAttractiveFields++;
+            }
+            else freeNormalFields++;
         }
+        numberOfPlants--;
     }
 
     private void feedAnimals() {
@@ -302,10 +319,6 @@ public class WorldMap {
                 if(fields[y][x].hasPlant()) {
                     ArrayList<Integer> a = fields[y][x].getAnimals();
                     int n = fields[y][x].numberOfAnimals();
-                    if(n > 2) {
-                        Collections.sort(a, new SortAnimals());
-                        fields[y][x].setAnimals(a);
-                    }
                     if(n > 0) {
                         allAnimals.get(a.get(0)).changeEnergy(energyFromPlant);
                         deletePlant(x, y);
@@ -322,7 +335,7 @@ public class WorldMap {
                 for(int i = 0; i < n - 1; i += 2) {
                     Animal a1 = allAnimals.get(a.get(i));
                     Animal a2 = allAnimals.get(a.get(i + 1));
-                    if(a2.getEnergy() > fullEnergy) reproduceAnimal(x, y, a1, a2);
+                    if(a2.getEnergy() > fullEnergy && a1.getEnergy() > fullEnergy) reproduceAnimal(x, y, a1, a2);
                 }
             }
     }
@@ -351,7 +364,7 @@ public class WorldMap {
         for(int i = minMutation; i <= maxMutation; i++) {
             int index = generator.nextInt(genomLength);
             int newGen = typeOfMutation == TypeOfMutation.RANDOM ? generator.nextInt(8) :
-                    generator.nextInt(2) == 0 ? newGens[index] - 1 : newGens[index] + 1;
+                    generator.nextInt(2) == 0 ? (newGens[index] - 1 + 8) % 8 : (newGens[index] + 1) % 8;
             newGens[index] = newGen;
         }
         placeAnimal(birthEnergy * 2, newGens, x, y);
@@ -359,11 +372,127 @@ public class WorldMap {
         a2.bornKid(birthEnergy);
     }
 
+    class SortAnimals implements Comparator<Integer> {
+        public int compare(Integer animalIndex1, Integer animalIndex2) {
+            Random generator = new Random();
+            int energyDiff = allAnimals.get(animalIndex2).getEnergy() - allAnimals.get(animalIndex1).getEnergy();
+            int ageDiff = allAnimals.get(animalIndex2).getAge() - allAnimals.get(animalIndex1).getAge();
+            int kidsDiff = allAnimals.get(animalIndex2).getKids() - allAnimals.get(animalIndex1).getKids();
+            return energyDiff != 0 ? energyDiff : ageDiff != 0 ? ageDiff : kidsDiff != 0 ? kidsDiff : generator.nextInt(3) - 1;
+        }
+    }
+
+    private void sortAnimals() {
+        for(int y = 0; y < height; y++)
+            for(int x = 0; x < width; x++) {
+                int n = fields[y][x].numberOfAnimals();
+                if(n > 2) {
+                    ArrayList<Integer> a = fields[y][x].getAnimals();
+                    Collections.sort(a, new SortAnimals());
+                    fields[y][x].setAnimals(a);
+                }
+            }
+    }
     public void day() {
+        sortAnimals();
         day++;
+        //System.out.println("Przed movnieciem: " + day + " " + head20.getIndexDeads());
         moveAnimals();
+        //System.out.println("Po movnieciu: " + day + " " + head20.getIndexDeads());
         feedAnimals();
         reproduceAnimals();
         growingPlants(dayPlants);
     }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public Field getField(int x, int y) {
+        return fields[y][x];
+    }
+
+    public ArrayList<Animal> getAnimalsFromField(int x, int y) {
+        ArrayList<Integer> animalsIndexes = fields[y][x].getAnimals();
+        ArrayList<Animal> animals = new ArrayList<>();
+        for(Integer index : animalsIndexes) {
+            animals.add(allAnimals.get(index));
+        }
+        return animals;
+    }
+
+    public int getBirthEnergy() {
+        return birthEnergy;
+    }
+
+    public int getFullEnergy() {
+        return fullEnergy;
+    }
+
+    public int getNumberOfPlants() {
+        return numberOfPlants;
+    }
+
+    public int getDay() {
+        return day;
+    }
+    public int getNumberOfAnimalsOnTheMap() {
+        int numberOfAllAnimals = 0;
+        for(Animal a : allAnimals)
+            if(a.getDeathDay() == -1) numberOfAllAnimals++;
+        return numberOfAllAnimals;
+    }
+    public int getNumberOfFreeFields() {
+        int free = 0;
+        for(int y = 0; y < height; y++)
+            for(int x = 0; x < width; x++)
+                if(!fields[y][x].hasPlant() && fields[y][x].numberOfAnimals() == 0) free++;
+        return free;
+    }
+
+    public String getMostPopularGenotype() {
+        int max = 0;
+        int[] best = {};
+        for(Map.Entry<int[],Integer> entry : numberOfGenotypes.entrySet()) {
+            if(entry.getValue() > max) best = entry.getKey();
+        }
+        String s = "[";
+        int i;
+        for(i = 0; i < best.length - 1; i++) {
+            s += best[i] + ", ";
+        }
+        s += best[i] +  "]";
+        return s;
+    }
+
+    public double averageEnergyForLiving() {
+        double sum = 0.;
+        int n = 0;
+        for(Animal a : allAnimals)
+            if(a.isAlive()) {
+                n++;
+                sum += a.getEnergy();
+            }
+        int places = 2;
+        double scale = Math.pow(10, places);
+        return Math.round(sum *  scale / n) / scale;
+    }
+
+    public double averageLifeTimeForDeads() {
+        double sum = 0.;
+        int n = 0;
+        for(Animal a : allAnimals)
+            if(a.getDeathDay() != -1) {
+                n++;
+                sum += a.getDeathDay();
+            }
+        int places = 2;
+        double scale = Math.pow(10, places);
+        return Math.round(sum *  scale / n) / scale;
+    }
 }
+
