@@ -53,25 +53,25 @@ public class App extends Application {
         ChoiceBox confiugarions = new ChoiceBox(FXCollections.observableArrayList("Small", "Normal", "Huge", new Separator(), "Select configuration from JSON file"));
         CheckBox csvCheckBox = new CheckBox("Safe daily data to CSV file");
         ArrayList<Thread> threads = new ArrayList<>();
-        ArrayList<GuiSimulationEngine> engines = new ArrayList<>();
-        ArrayList<WorldMap> maps = new ArrayList<>();
 
         EventHandler newSimulationEvent = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 int myIndex = threads.size();
-                maps.add(new WorldMap(currentMap));
-                engines.add(new GuiSimulationEngine(maps.get(myIndex), csv, 100));
-                threads.add(new Thread(engines.get(myIndex)));
+                WorldMap map = new WorldMap(currentMap);
+                GuiSimulationEngine engine = new GuiSimulationEngine(map, csv, 100);
+                threads.add(new Thread(engine));
+
 
                 confiugarions.setValue(null);
                 reset();
                 newSimulation.setDisable(true);
                 message.setText("You can choose configuration file or one of the default configurations and then start simulation.");
 
+
                 Stage stage = new Stage();
-                VBox infos = new VBox(20, engines.get(myIndex).getMapInfoView(), engines.get(myIndex).getTrackedAnimalInfo());
-                HBox legendAndMapAndInfox = new HBox(20, engines.get(myIndex).getLegend(), engines.get(myIndex).getMapView(), infos);
+                VBox infos = new VBox(20, engine.getMapInfoView(), engine.getTrackedAnimalInfo());
+                HBox legendAndMapAndInfox = new HBox(20, engine.getLegend(), engine.getMapView(), infos);
 
                 Button startButton = new Button("Start");
                 startButton.setPrefHeight(50);
@@ -84,9 +84,10 @@ public class App extends Application {
                 EventHandler startSimulation = new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        engines.get(myIndex).go();
-                        threads.set(myIndex, new Thread(engines.get(myIndex)));
+                        engine.go();
+                        threads.set(myIndex, new Thread(engine));
                         threads.get(myIndex).start();
+
                         startButton.setDisable(true);
                         stopButton.setDisable(false);
                     }
@@ -95,8 +96,8 @@ public class App extends Application {
                 EventHandler stopSimulation = new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
+                        engine.stop();
                         threads.get(myIndex).interrupt();
-                        engines.get(myIndex).stop();
                         startButton.setDisable(false);
                         stopButton.setDisable(true);
                     }
@@ -106,8 +107,8 @@ public class App extends Application {
                 VBox everything = new VBox(20, buttons, legendAndMapAndInfox);
 
                 stage.setScene(new Scene(everything));
-                stage.setWidth(10 * maps.get(myIndex).getWidth() + 750);
-                stage.setHeight(Math.max(10 * maps.get(myIndex).getHeight(), 700));
+                stage.setWidth(10 * map.getWidth() + 750);
+                stage.setHeight(Math.max(10 * map.getHeight(), 700));
                 stage.show();
             }
         };
@@ -129,7 +130,7 @@ public class App extends Application {
                 }
                 else if(newValue.intValue() == 4) {
                     FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Select file with configuration");
+                    fileChooser.setTitle("Select JSON file with configuration");
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files", "*.json");
                     fileChooser.getExtensionFilters().add(extFilter);
                     Stage stageFileChooser = new Stage();

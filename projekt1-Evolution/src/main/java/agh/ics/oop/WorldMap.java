@@ -30,6 +30,7 @@ public class WorldMap {
     private TypeOfMutation typeOfMutation;
     private TypeOfMovement typeOfMovement;
     private Map<int[], Integer> numberOfGenotypes;
+    private int numberOfAnimalsOnMap;
 
     public WorldMap(WorldMap map) {
         this.width = map.width;             //szerokość od 0 do width-1
@@ -48,6 +49,7 @@ public class WorldMap {
         this.allAnimals = new ArrayList<>();
         this.allAnimalsIndex = 0;
         this.numberOfPlants = 0;
+        this.numberOfAnimalsOnMap = 0;
         this.numberOfGenotypes = new HashMap<>();
         this.typeOfPlanet = map.typeOfPlanet;
         this.typeOfPlants = map.typeOfPlants;
@@ -94,6 +96,7 @@ public class WorldMap {
         this.allAnimals = new ArrayList<>();
         this.allAnimalsIndex = 0;
         this.numberOfPlants = 0;
+        this.numberOfAnimalsOnMap = 0;
         this.numberOfGenotypes = new HashMap<>();
         this.typeOfPlanet = typeOfPlanet;
         this.typeOfPlants = typeOfPlants;
@@ -231,6 +234,7 @@ public class WorldMap {
     private void placeAnimal(int energy, int[] gens, int x, int y) {
         Animal a = new Animal(energy, gens, x, y, allAnimalsIndex);
         allAnimals.add(a);
+        this.numberOfAnimalsOnMap++;
         fields[y][x].addAnimal(allAnimalsIndex++);
         if(numberOfGenotypes.containsKey(gens)) numberOfGenotypes.replace(gens, numberOfGenotypes.get(gens) + 1);
         else numberOfGenotypes.put(gens, 1);
@@ -269,7 +273,7 @@ public class WorldMap {
         int y = a.yPosition;
         a.die(day);
         fields[y][x].animalDied();
-
+        this.numberOfAnimalsOnMap--;
         if(typeOfPlants == TypeOfPlants.CORPSES) {
             changeDeadsLinkedList(fields[y][x]);
         }
@@ -491,10 +495,7 @@ public class WorldMap {
         return day;
     }
     public int getNumberOfAnimalsOnTheMap() {
-        int numberOfAllAnimals = 0;
-        for(Animal a : allAnimals)
-            if(a.getDeathDay() == -1) numberOfAllAnimals++;
-        return numberOfAllAnimals;
+        return numberOfAnimalsOnMap;
     }
     public int getNumberOfFreeFields() {
         int free = 0;

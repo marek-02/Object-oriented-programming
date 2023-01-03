@@ -41,6 +41,7 @@ public class GuiSimulationEngine implements Runnable {
         this.csv = csv;
         if(csv) {
             FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select CSV file for output data");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             csvFile = fileChooser.showSaveDialog(null);
@@ -107,10 +108,10 @@ public class GuiSimulationEngine implements Runnable {
         return legend;
     }
 
-    public void go() {
+    public synchronized void go() {
         stop = false;
     }
-    public void stop() {
+    public synchronized void stop() {
         stop = true;
         drawMap();
     }
