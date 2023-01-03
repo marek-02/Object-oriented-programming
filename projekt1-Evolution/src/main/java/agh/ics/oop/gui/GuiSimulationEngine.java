@@ -32,6 +32,7 @@ public class GuiSimulationEngine implements Runnable {
     private Animal trackedAnimal;
     private boolean csv;
     private File csvFile;
+    private String csvString;
 
     public GuiSimulationEngine(WorldMap worldMap, boolean csv, int moveDelay) {
         this.gridPane =  new GridPane();
@@ -45,9 +46,11 @@ public class GuiSimulationEngine implements Runnable {
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files", "*.csv");
             fileChooser.getExtensionFilters().add(extFilter);
             csvFile = fileChooser.showSaveDialog(null);
+            csvString = "";
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
-                writer.write("day; number of plants; number of animals; number of free fields; the most popular genotype; average energy; average life length of deads\n");
+                csvString += "day; number of plants; number of animals; number of free fields; the most popular genotype; average energy; average life length of deads\n";
+                writer.write(csvString);
                 writer.close();
             } catch (Exception ex) {
                 this.csv = false;
@@ -278,17 +281,10 @@ public class GuiSimulationEngine implements Runnable {
 
     private void addToCsv() {
         try {
-            String s = "";
-            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
-                String line;
-                while ((line = reader.readLine()) != null)
-                    s += line + '\n';
-            }
-            s += map.getDay() + "; " + map.getNumberOfPlants() + "; " + map.getNumberOfAnimalsOnTheMap() + "; " + map.getNumberOfFreeFields() +
+            csvString += map.getDay() + "; " + map.getNumberOfPlants() + "; " + map.getNumberOfAnimalsOnTheMap() + "; " + map.getNumberOfFreeFields() +
                     "; " + map.getMostPopularGenotypeAsString() + "; " + map.averageEnergyForLiving() + "; " + map.averageLifeTimeForDeads() + '\n';
             BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
-            writer.write(s);
-
+            writer.write(csvString);
             writer.close();
         } catch (Exception ex) {
             System.out.println("Problems with CSV file.");
