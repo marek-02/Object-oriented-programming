@@ -18,8 +18,8 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.ArrayList;
-import org.json.*;
 
+import org.json.*;
 
 
 public class App extends Application {
@@ -116,19 +116,16 @@ public class App extends Application {
         confiugarions.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if(newValue.intValue() == 0) {
+                if (newValue.intValue() == 0) {
                     newSimulation.setDisable(false);
                     currentMap = smallMap;
-                }
-                else if(newValue.intValue() == 1) {
+                } else if (newValue.intValue() == 1) {
                     newSimulation.setDisable(false);
                     currentMap = normalMap;
-                }
-                else if(newValue.intValue() == 2) {
+                } else if (newValue.intValue() == 2) {
                     newSimulation.setDisable(false);
                     currentMap = hugeMap;
-                }
-                else if(newValue.intValue() == 4) {
+                } else if (newValue.intValue() == 4) {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Select JSON file with configuration");
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files", "*.json");
@@ -138,7 +135,7 @@ public class App extends Application {
                     stageFileChooser.setHeight(400);
                     File selectedFile = fileChooser.showOpenDialog(stageFileChooser);
 
-                    if(selectedFile != null) {
+                    if (selectedFile != null) {
                         try {
                             String jsonString = "";
                             try (BufferedReader reader = new BufferedReader(new FileReader(new File(selectedFile.getPath())))) {
@@ -165,13 +162,13 @@ public class App extends Application {
                             setSafeMutations(jsonObject, "typeOfMutation");
                             setSafeMovement(jsonObject, "typeOfMovement");
                             setSafePlanet(jsonObject, "typeOfPlanet");
-                            if(!checkValues()) {
+                            if (!checkValues()) {
                                 message.setText("Data from the selected file failed validation! \nYou can select another configuration file or one of the default configurations.");
                                 reset();
                                 confiugarions.setValue(null);
                             } else {
                                 currentMap = new WorldMap(width, height, energyFromPlant, startPlants, dayPlants, startAnimals, startEnergy, fullEnergy,
-                                        birthEnergy, minMutation, maxMutation,genomLength,
+                                        birthEnergy, minMutation, maxMutation, genomLength,
                                         typeOfPlants, typeOfMutation, typeOfMovement, typeOfPlanet);
                                 newSimulation.setDisable(false);
                                 message.setText("Data validation from the selected file was successful! \nYou can start the simulation or choose another configuration file or one of the default configurations.");
@@ -188,7 +185,7 @@ public class App extends Application {
         csvCheckBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(csvCheckBox.isSelected()) csv = true;
+                if (csvCheckBox.isSelected()) csv = true;
                 else csv = false;
             }
         });
@@ -212,32 +209,37 @@ public class App extends Application {
     private void setSafePlants(JSONObject obj, String key) {
         try {
             String s = obj.getString(key).toLowerCase();
-            if(s.equals("corpses")) typeOfPlants = TypeOfPlants.CORPSES;
+            if (s.equals("corpses")) typeOfPlants = TypeOfPlants.CORPSES;
             else typeOfPlants = TypeOfPlants.EQATOR;
-        } catch (JSONException ex) {}
+        } catch (JSONException ex) {
+        }
     }
+
     private void setSafeMutations(JSONObject obj, String key) {
         try {
             String s = obj.getString(key).toLowerCase();
-            if(s.equals("random")) typeOfMutation =TypeOfMutation.RANDOM;
+            if (s.equals("random")) typeOfMutation = TypeOfMutation.RANDOM;
             else typeOfMutation = TypeOfMutation.CORRECTION;
-        } catch (JSONException ex) {}
+        } catch (JSONException ex) { // to nie jest dobra obsługa wyjątku
+        }
     }
 
     private void setSafeMovement(JSONObject obj, String key) {
         try {
             String s = obj.getString(key).toLowerCase();
-            if(s.equals("crazy")) typeOfMovement = TypeOfMovement.CRAZY;
+            if (s.equals("crazy")) typeOfMovement = TypeOfMovement.CRAZY;
             else typeOfMovement = TypeOfMovement.NORMAL;
-        } catch (JSONException ex) { }
+        } catch (JSONException ex) { // jw.
+        }
     }
 
     private void setSafePlanet(JSONObject obj, String key) {
         try {
             String s = obj.getString(key).toLowerCase();
-            if(s.equals("portal")) typeOfPlanet = TypeOfPlanet.PORTAL;
+            if (s.equals("portal")) typeOfPlanet = TypeOfPlanet.PORTAL;
             else typeOfPlanet = TypeOfPlanet.EARTH;
-        } catch (JSONException ex) {}
+        } catch (JSONException ex) {
+        }
     }
 
     private boolean checkValues() {
@@ -264,13 +266,14 @@ public class App extends Application {
         typeOfPlanet = TypeOfPlanet.EARTH;
         csv = false;
     }
+
     public void init() {
         reset();
         smallMap = new WorldMap(width, height, energyFromPlant, startPlants, dayPlants, startAnimals, startEnergy, fullEnergy,
-                birthEnergy, minMutation, maxMutation,genomLength,
+                birthEnergy, minMutation, maxMutation, genomLength,
                 typeOfPlants, typeOfMutation, typeOfMovement, typeOfPlanet);
         normalMap = new WorldMap(30, 30, 15, 20, 4, 30, 50, 25,
-                18, 0, 1,12,
+                18, 0, 1, 12,
                 TypeOfPlants.CORPSES, TypeOfMutation.CORRECTION, TypeOfMovement.NORMAL, TypeOfPlanet.PORTAL);
         hugeMap = new WorldMap(60, 50, 25, 30, 6, 60, 70, 40,
                 25, 0, 2,

@@ -6,8 +6,8 @@ public class Field {
     private boolean hasPlant;
     private boolean isAttractive;
     private int deads;
-    private int indexDeads;
-    private Field prevDeads;
+    private int indexDeads; // nieczytelna nazwa
+    private Field prevDeads; // ??
     private Field nextDeads;
     private ArrayList<Integer> animals;
 
@@ -24,7 +24,7 @@ public class Field {
         deads++;
     }
 
-    public void noLongerAttractive() {
+    public void noLongerAttractive() { // setAttractive nie byłoby lepsze?
         isAttractive = false;
     }
 
@@ -85,7 +85,7 @@ public class Field {
     }
 
     public ArrayList<Integer> getAnimals() {
-        return animals;
+        return animals; // dehermetyzacja
     }
 
     public void setAnimals(ArrayList<Integer> animals) {

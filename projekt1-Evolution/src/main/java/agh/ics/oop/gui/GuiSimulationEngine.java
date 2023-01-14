@@ -35,12 +35,12 @@ public class GuiSimulationEngine implements Runnable {
     private String csvString;
 
     public GuiSimulationEngine(WorldMap worldMap, boolean csv, int moveDelay) {
-        this.gridPane =  new GridPane();
+        this.gridPane = new GridPane();
         this.vBox = new VBox(5);
         this.vBox2 = new VBox(5);
         this.map = worldMap;
         this.csv = csv;
-        if(csv) {
+        if (csv) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select CSV file for output data");
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files", "*.csv");
@@ -52,7 +52,7 @@ public class GuiSimulationEngine implements Runnable {
                 csvString += "day; number of plants; number of animals; number of free fields; the most popular genotype; average energy; average life length of deads\n";
                 writer.write(csvString);
                 writer.close();
-            } catch (Exception ex) {
+            } catch (Exception ex) { // nie wolno łapać Exception
                 this.csv = false;
                 System.out.println("Wrong csv file.");
             }
@@ -68,10 +68,10 @@ public class GuiSimulationEngine implements Runnable {
         gridPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
-                if(stop) {
+                if (stop) {
                     Node source;
-                    if(e.getTarget() instanceof Circle) {
-                        source = (Node)((Circle) e.getTarget()).getParent();
+                    if (e.getTarget() instanceof Circle) {
+                        source = (Node) ((Circle) e.getTarget()).getParent();
                         int x = GridPane.getColumnIndex(source);
                         int y = GridPane.getRowIndex(source);
                         trackedAnimal = map.getRandomAnimalFromField(x, y);
@@ -83,15 +83,19 @@ public class GuiSimulationEngine implements Runnable {
 
     @Override
     public void run() {
-        while(!stop) {
-            Platform.runLater(()->{
+        while (!stop) {
+            Platform.runLater(() -> {
                 map.day();
                 drawMap();
                 drawInfo();
                 drawInfoAboutTrackedAnimal();
-                if(csv) addToCsv();
+                if (csv) addToCsv();
             });
-            try { Thread.sleep(moveDelay); } catch (InterruptedException ex) { System.out.println(ex.getMessage()); }
+            try {
+                Thread.sleep(moveDelay);
+            } catch (InterruptedException ex) {
+                System.out.println(ex.getMessage()); // to nie jest dobra obsługa
+            }
         }
     }
 
@@ -114,6 +118,7 @@ public class GuiSimulationEngine implements Runnable {
     public synchronized void go() {
         stop = false;
     }
+
     public synchronized void stop() {
         stop = true;
         drawMap();
@@ -138,28 +143,29 @@ public class GuiSimulationEngine implements Runnable {
     }
 
     private void drawMap() {
-        for(int y = 0; y < map.getHeight(); y++)
-            for(int x = 0; x < map.getWidth(); x++) {
+        for (int y = 0; y < map.getHeight(); y++)
+            for (int x = 0; x < map.getWidth(); x++) {
                 drawField(x, y);
             }
     }
+
     private Circle drawAnimal(Animal a) {
         Circle circle = new Circle(width / 2 - 1);
         int r = 167;
         int gb = 121;
-        if(a.equals(trackedAnimal)) {
+        if (a.equals(trackedAnimal)) {
             r = 255;
             gb = 0;
         } else if (stop && Arrays.equals(a.getGens(), map.getMostPopularGenotype())) {
             r = 104;
             gb = 170;
-        } else if(a.isNormal(map.getBirthEnergy(), map.getFullEnergy())) {
+        } else if (a.isNormal(map.getBirthEnergy(), map.getFullEnergy())) {
             r = 112;
             gb = 79;
-        } else if(a.isFed(map.getFullEnergy())) {
+        } else if (a.isFed(map.getFullEnergy())) {
             r = 85;
             gb = 57;
-        } else if(a.isStrong(map.getFullEnergy())) {
+        } else if (a.isStrong(map.getFullEnergy())) {
             r = 71;
             gb = 45;
         }
@@ -173,37 +179,38 @@ public class GuiSimulationEngine implements Runnable {
         int r = 234;
         int g = 231;
         int b = 177;
-        if(f.hasPlant()) {
+        if (f.hasPlant()) {
             r = 166;
             g = 187;
             b = 141;
-        } else if(f.isAttractive()) {
+        } else if (f.isAttractive()) {
             r = 97;
             g = 135;
             b = 110;
         }
-        pane.setStyle("-fx-background-color: rgb(" + r + "," + g + "," +  b + ");");
+        pane.setStyle("-fx-background-color: rgb(" + r + "," + g + "," + b + ");");
         return pane;
     }
+
     private void drawField(int x, int y) {
         Pane pane = drawGround(map.getField(x, y));
-        if(map.getAnimalsFromField(x, y).size() > 0) {
+        if (map.getAnimalsFromField(x, y).size() > 0) {
             ArrayList<Animal> animals = map.getAnimalsFromField(x, y);
             Animal a = null;
-            if(trackedAnimal != null && animals.contains(trackedAnimal)) a = trackedAnimal;
-            else if(stop) {
-                for(Animal animal : animals) {
-                    if(animal.getGens().equals(map.getMostPopularGenotype())) {
+            if (trackedAnimal != null && animals.contains(trackedAnimal)) a = trackedAnimal;
+            else if (stop) {
+                for (Animal animal : animals) {
+                    if (animal.getGens().equals(map.getMostPopularGenotype())) {
                         a = animal;
                         break;
                     }
                 }
             }
-            if(a == null) a = animals.get(0);
+            if (a == null) a = animals.get(0);
             Circle c = drawAnimal(a);
             pane.getChildren().add(c);
-            c.setCenterX(width/2);
-            c.setCenterY(height/2);
+            c.setCenterX(width / 2);
+            c.setCenterY(height / 2);
         }
         gridPane.add(pane, x, y, 1, 1);
     }
@@ -224,14 +231,14 @@ public class GuiSimulationEngine implements Runnable {
 
     private void drawInfoAboutTrackedAnimal() {
         vBox2.getChildren().clear();
-        if(trackedAnimal != null) {
+        if (trackedAnimal != null) {
             Label l0 = new Label("Information about the tracked animal:");
             Label l1 = new Label("Genotype:\n" + trackedAnimal.getStringGens());
             Label l2 = new Label("Energy: " + trackedAnimal.getEnergy());
             Label l3 = new Label("Eaten plants: " + trackedAnimal.getEatenPlants());
             Label l4 = new Label("Number of children: " + trackedAnimal.getKids());
             Label l5;
-            if(trackedAnimal.isAlive()) l5 = new Label("Age: " + trackedAnimal.getAge());
+            if (trackedAnimal.isAlive()) l5 = new Label("Age: " + trackedAnimal.getAge());
             else l5 = new Label("Death day: " + trackedAnimal.getDeathDay());
 
             vBox2.getChildren().addAll(l0, l1, l2, l3, l4, l5);
@@ -253,8 +260,8 @@ public class GuiSimulationEngine implements Runnable {
         HBox hboxNormal = circleleLegend("Normal Animal", 112, 79, 79);
         HBox hboxFed = circleleLegend("Fed Animal", 85, 57, 57);
         HBox hboxStrong = circleleLegend("Strong Animal", 71, 45, 45);
-        HBox hboxTracked = circleleLegend("Tracked Animal", 255,0, 0);
-        HBox hboxPopular = circleleLegend("Animal with the most popular genotype", 104,170, 170);
+        HBox hboxTracked = circleleLegend("Tracked Animal", 255, 0, 0);
+        HBox hboxPopular = circleleLegend("Animal with the most popular genotype", 104, 170, 170);
 
         VBox vbox = new VBox(20, legend, hboxStep, hboxJungle, hboxGrass, hboxWeak, hboxNormal, hboxFed, hboxStrong, hboxTracked, hboxPopular);
 
@@ -263,7 +270,7 @@ public class GuiSimulationEngine implements Runnable {
 
     private HBox rectangleLegend(String infoText, int r, int g, int b) {
         Label info = new Label(infoText);
-        Rectangle view = new Rectangle(20,20);
+        Rectangle view = new Rectangle(20, 20);
         view.setFill(Color.rgb(r, g, b));
         HBox hbox = new HBox(20);
         hbox.getChildren().addAll(view, info);
@@ -286,7 +293,7 @@ public class GuiSimulationEngine implements Runnable {
             BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
             writer.write(csvString);
             writer.close();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // nie wolno łapać Exception
             System.out.println("Problems with CSV file.");
         }
     }

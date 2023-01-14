@@ -4,15 +4,15 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Animal {
-    public int xPosition;
-    public int yPosition;
+    public int xPosition; // czemu nie wektor?
+    public int yPosition; // i czemu public?
     private int energy;
-    private int direction;
-    private int[] gens;
+    private int direction; // int?
+    private int[] gens; // przydałaby się osobna klasa na genom
     private int genIndex;
-    private int kids;
+    private int kids; // kindCount/kidsNumber
     private int age;
-    private int eatenPlants;
+    private int eatenPlants; //jw.
     private int deathDay;
     private int animalIndex;
 
@@ -46,7 +46,8 @@ public class Animal {
     public int getKids() {
         return kids;
     }
-    public void eatPlant(int x) {
+
+    public void eatPlant(int x) { // niejasne czym jest x
         eatenPlants++;
         changeEnergy(x);
     }
@@ -54,25 +55,26 @@ public class Animal {
     public void changeEnergy(int x) {
         energy += x;
     }
+
     public int turnAround(TypeOfMovement type) {
         direction = (direction + gens[genIndex]) % 8;
-        if(type == TypeOfMovement.CRAZY && new Random().nextInt(10) < 2) genIndex = new Random().nextInt(gens.length);
+        if (type == TypeOfMovement.CRAZY && new Random().nextInt(10) < 2) genIndex = new Random().nextInt(gens.length); // if nie jest najlepszym rozwiązaniem
         else genIndex = (genIndex + 1) % gens.length;
         return direction;
     }
 
-    public int getGen(int index) {
+    public int getGen(int index) { // Gene
         return gens[index];
     }
 
     public String getStringGens() {
         String s = "";
         int i;
-        for(i = 0; i < gens.length - 1; i++){
-            if(i == genIndex) s += gens[i] + ", <- current gen\n";
+        for (i = 0; i < gens.length - 1; i++) {
+            if (i == genIndex) s += gens[i] + ", <- current gen\n";
             else s += gens[i] + ", \n";
         }
-        if(i == genIndex) s += gens[i] + " <- current gen";
+        if (i == genIndex) s += gens[i] + " <- current gen";
         else s += gens[i];
         return s;
     }
@@ -81,7 +83,9 @@ public class Animal {
         return gens;
     }
 
-    public int getEatenPlants() { return eatenPlants; }
+    public int getEatenPlants() {
+        return eatenPlants;
+    }
 
     public void rotation180Degree() {
         direction = (direction + 4) % 8;
@@ -100,6 +104,7 @@ public class Animal {
     public void die(int day) {
         deathDay = day;
     }
+
     public boolean isAlive() {
         return energy > 0;
     }
@@ -112,7 +117,7 @@ public class Animal {
         return energy > birthEnergy && energy < fullEnergy;
     }
 
-    public boolean isFed(int fullEnergy) {
+    public boolean isFed(int fullEnergy) { // fullEnergy - myląca nazwa
         return energy >= fullEnergy && energy < 2 * fullEnergy;
     }
 
@@ -122,11 +127,11 @@ public class Animal {
 
     @Override
     public boolean equals(Object other) {
-        if(other == this) {
+        if (other == this) {
             return true;
         }
 
-        if(!(other instanceof Animal)) return false;
+        if (!(other instanceof Animal)) return false;
 
         Animal a = (Animal) other;
         return a.animalIndex == this.animalIndex;
